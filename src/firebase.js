@@ -4,12 +4,14 @@ import "firebase/auth";
 
 if (!firebase.apps.length) {
   firebase.initializeApp({
-    apiKey: "AIzaSyD5IZ-ir56U3FDLG_c6BngJZDibwa__uys",
-    authDomain: "canvas-app-090621.firebaseapp.com",
-    projectId: "canvas-app-090621",
-    storageBucket: "canvas-app-090621.appspot.com",
-    messagingSenderId: "428837731108",
-    appId: "1:428837731108:web:9bbc6112afcbcd8ddcd1b1",
+    apiKey: "AIzaSyCqyFtT2kmDCncsDDPWAq2wJol2CsB-mL8",
+    authDomain: "dichotomy-ro.firebaseapp.com",
+    databaseURL: "https://dichotomy-ro.firebaseio.com",
+    projectId: "dichotomy-ro",
+    storageBucket: "dichotomy-ro.appspot.com",
+    messagingSenderId: "372054597535",
+    appId: "1:372054597535:web:a6ede5f4ebdda239d2e7aa",
+    measurementId: "G-RK1Z48PBKJ",
   });
 } else {
   firebase.app();
