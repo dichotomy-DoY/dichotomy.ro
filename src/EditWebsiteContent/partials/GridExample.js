@@ -72,21 +72,26 @@ export default () => {
   const [open, setOpen] = React.useState(false);
   const [groupOpen, setGroupOpen] = React.useState(false);
   const [reload, setReload] = useState(false);
-  const [rowData, setRowData] = useState([]);
-  const [objectDetails, setObjectDetails] = useState({
-    rowData: [],
-    selectedRow: {},
-  });
+  const [rowData, setRowData] = useState("");
+  const [objectDetails, setObjectDetails] = useState({});
   const [isNewObject, setIsNewObject] = useState(true);
 
   const handleClickOpen = () => {
-    setObjectDetails({ rowData, selectedRow: {} });
     setOpen(true);
   };
 
   const handleGroupClickOpen = () => {
-    setObjectDetails({ rowData, selectedRow: {} });
     setGroupOpen(true);
+  };
+
+  const putDataInOrder = (data) => {
+    console.log(data);
+
+    let sortedCollection = _.sortBy(data.objects, function (item) {
+      return data.objectsOrder.indexOf(item.objectId);
+    });
+
+    return sortedCollection;
   };
 
   useEffect(() => {
@@ -95,45 +100,27 @@ export default () => {
       .ref("websiteContent")
       .get()
       .then((snapshot) => {
-        setRowData(snapshot.val().objects);
-      });
-  }, [open, groupOpen]);
+        let data = [];
+        // for (let item in snapshot.val()) {
+        //   data.push(snapshot.val()[item]);
+        // }
+        data = putDataInOrder(snapshot.val());
 
-  const saveOrderDetails = (updatedRowData) => {
-    firebase
-      .database()
-      .ref("websiteContent/objects")
-      .set(updatedRowData, (error) => {
-        if (error) {
-          alert("Error Occured");
-        } else {
-          console.log("Saved");
-        }
+        //console.log(data);
+        setRowData(data);
       });
-  };
+  }, [open]);
 
   const BtnCellRenderer = (props) => {
     return (
       <DeleteIcon
         color="secondary"
         onClick={() => {
-          let data = props.agGridReact.props.rowData;
-          console.log(data);
-          data = data.filter(
-            (element) => element.objectId !== props.data.objectId
-          );
-          console.log(data);
           firebase
             .database()
-            .ref("websiteContent/objects/")
-            .set(data, (error) => {
-              if (error) {
-                alert("Error Occured");
-              } else {
-                //alert("Deleted");
-                setRowData(data);
-              }
-            });
+            .ref("websiteContent/objects/" + props.data.ref)
+            .remove();
+          alert(JSON.stringify(props.data));
         }}
       />
     );
@@ -172,53 +159,43 @@ export default () => {
     // other grid options ...
   };
 
-  const array_move = (collection, elementId, newIndex) => {
-    const prevIndex = collection.findIndex((e) => e.objectId === elementId);
-    const up = prevIndex > newIndex ? true : false; // is movement towards up
+  const [gridApi, setGridApi] = useState(null);
+  const [gridColumnApi, setGridColumnApi] = useState(null);
+  //const [rowData, setRowData] = useState(null);
 
-    let index = 0;
+  const onGridReady = (params) => {
+    setGridApi(params.api);
+    setGridColumnApi(params.columnApi);
 
-    return _.sortBy(collection, (element) => {
-      if (newIndex === 0) {
-        // move to the top
-        return element.objectId === elementId ? 1 : 2;
-      } else if (newIndex === collection.length - 1) {
-        // move to the bottom
-        return element.objectId === elementId ? 2 : 1;
-      } else {
-        if (element.objectId === elementId) {
-          index++;
-          return 2;
-        }
-        if (index < newIndex || (!up && index === newIndex)) {
-          index++;
-          return 1;
-        } else {
-          index++;
-          return 3;
-        }
-      }
-    });
+    const updateData = (data) => params.api.setRowData(data);
+
+    fetch("https://www.ag-grid.com/example-assets/olympic-winners.json")
+      .then((resp) => resp.json())
+      .then((data) => updateData(data));
   };
 
   const onRowDragEnd = (event) => {
-    let movedNode = event.node;
-
-    let movedData = movedNode.data;
-    let toIndex = movedNode.rowIndex;
-
     console.log(rowData);
-
-    // update rowOrderData array, state does not need to be updated
-    let updatedRowData = array_move(rowData, movedData.objectId, toIndex);
-
-    console.log(updatedRowData);
-
-    // update state
-    setRowData(updatedRowData);
-
-    // update row order
-    saveOrderDetails(updatedRowData);
+    console.log(event);
+    // var movingNode = event.node;
+    // var overNode = event.overNode;
+    // var rowNeedsToMove = movingNode !== overNode;
+    // if (rowNeedsToMove) {
+    //   var movingData = movingNode.data;
+    //   var overData = overNode.data;
+    //   var fromIndex = immutableStore.indexOf(movingData);
+    //   var toIndex = immutableStore.indexOf(overData);
+    //   var newStore = immutableStore.slice();
+    //   moveInArray(newStore, fromIndex, toIndex);
+    //   immutableStore = newStore;
+    //   gridApi.setRowData(newStore);
+    //   gridApi.clearFocusedCell();
+    // }
+    // function moveInArray(arr, fromIndex, toIndex) {
+    //   var element = arr[fromIndex];
+    //   arr.splice(fromIndex, 1);
+    //   arr.splice(toIndex, 0, element);
+    // }
   };
 
   return (
@@ -265,18 +242,27 @@ export default () => {
               style={{ height: "65vh", width: "100%", maxWidth: "1200px" }}
             >
               <AgGridReact
-                gridOptions={gridOptions}
-                rowData={rowData}
-                onRowDoubleClicked={(e) => {
-                  setObjectDetails({ rowData, selectedRow: e.data });
-                  setIsNewObject(false);
-                  e.data.isGroup ? setGroupOpen(true) : setOpen(true);
+                defaultColDef={{
+                  width: 170,
+                  sortable: true,
+                  filter: true,
                 }}
                 rowDragManaged={true}
-                onRowDragEnd={onRowDragEnd}
-                isFullWidthCell={(rowNode) => rowNode.data.isGroup}
-                fullWidthCellRenderer="fullWidthCellRenderer"
-              ></AgGridReact>
+                rowDragMultiRow={true}
+                rowSelection={"multiple"}
+                animateRows={true}
+                onGridReady={onGridReady}
+                rowData={rowData}
+              >
+                <AgGridColumn field="athlete" rowDrag={true} />
+                <AgGridColumn field="country" />
+                <AgGridColumn field="year" width={100} />
+                <AgGridColumn field="date" />
+                <AgGridColumn field="sport" />
+                <AgGridColumn field="gold" />
+                <AgGridColumn field="silver" />
+                <AgGridColumn field="bronze" />
+              </AgGridReact>
             </div>
           </div>
           <OBJECT__POPUP

@@ -1,51 +1,19 @@
-import ReactDOM from "react-dom";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import ScrollContainer from "react-indiana-drag-scroll";
 import "./Canvas.css";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import firebase from "../firebase";
-
-const numbers = new Array(50).fill(1).map((_, index) => index + 1);
-const rowStyle = {
-  width: "300vw",
-  height: "100vh",
-  display: "flex",
-};
-
-let objectDataDB = [
-  {
-    key: "a1",
-    type: "image",
-    width: "300px",
-    height: "auto",
-    top: "500px",
-    left: "350px",
-    url: "images/ca1.webp",
-  },
-  {
-    key: "a2",
-    type: "image",
-    width: "300px",
-    height: "350px",
-    top: "10px",
-    left: "350px",
-    url: "images/ca1.webp",
-  },
-  {
-    key: "a3",
-    type: "image",
-    width: "300px",
-    height: "350px",
-    top: "10px",
-    left: "1000px",
-    url: "images/ca1.webp",
-  },
-];
+import Image from "../Image/Image";
+import loadingGIF from "./loading.gif";
 
 const App = () => {
+  let numberOfResourcesLoaded = 0;
+  const [totalResourcesToBeLoaded, setTotalResourcesToBeLoaded] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [rowData, setRowData] = useState([]);
-  const [canvas_width, set_canvas_width] = useState("");
-  const [canvas_height, set_canvas_height] = useState("");
+  const [canvasScale, setCanvasScale] = useState(0);
   const [button_width, set_button_width] = useState("");
   const [button_height, set_button_height] = useState("");
   const [button_top, set_button_top] = useState("");
@@ -57,12 +25,17 @@ const App = () => {
       .ref("websiteContent/objects")
       .get()
       .then((snapshot) => {
-        console.log(snapshot.val());
-        let data = [];
-        for (let item in snapshot.val()) {
-          data.push(snapshot.val()[item]);
-        }
-        console.log(data);
+        let data = snapshot.val();
+
+        setTotalResourcesToBeLoaded(
+          data.reduce((sum, value) => {
+            if (value.imgUrl) {
+              return sum + 1;
+            } else {
+              return sum;
+            }
+          }, 0)
+        );
         setRowData(data);
       });
     firebase
@@ -70,57 +43,75 @@ const App = () => {
       .ref("websiteContent/canvas")
       .get()
       .then((snapshot) => {
-        console.log(snapshot.val());
-        set_canvas_width(snapshot.val().canvas_width);
-        set_canvas_height(snapshot.val().canvas_height);
+        setCanvasScale(snapshot.val().canvasScale);
       });
     firebase
       .database()
       .ref("websiteContent/button")
       .get()
       .then((snapshot) => {
-        console.log(snapshot.val());
         set_button_width(snapshot.val().width);
         set_button_height(snapshot.val().height);
         set_button_top(snapshot.val().top);
         set_button_left(snapshot.val().left);
       });
   }, []);
+
+  const resourceLoaded = () => {
+    ++numberOfResourcesLoaded;
+    console.log(
+      `resources loaded: ${numberOfResourcesLoaded}/${totalResourcesToBeLoaded}`
+    );
+    if (numberOfResourcesLoaded == totalResourcesToBeLoaded) {
+      setIsLoading(false);
+      console.log("Everything loaded");
+    }
+  };
+
   return (
-    <div>
-      <ScrollContainer className="container">
-        <div>
-          <h1>123</h1>
-          <TransformWrapper
-            defaultScale={1}
-            wheel={{ step: 100 }}
-            pan={{
-              disabled: true,
-            }}
-            options={{
-              minScale: 0.8,
-              maxScale: 1,
-            }}
-          >
-            <TransformComponent>
+    <>
+      <div
+        className="loading"
+        style={{
+          display: isLoading ? "block" : "none",
+          backgroundImage: `url(${loadingGIF})`,
+          backgroundSize: `20%`,
+        }}
+      />
+      <div
+        style={{
+          display: isLoading ? "none" : "block",
+        }}
+      >
+        <ScrollContainer
+          className="container"
+          vertical={false}
+          horizontal={false}
+        >
+          <div>
+            <CustomTransformWrapper canvasScale={canvasScale}>
               <div
-                style={{ width: canvas_width, height: canvas_height }}
+                style={{
+                  width: 100 + "vw",
+                  height: 100 + "vh",
+                }}
                 className="canvas__container"
               >
-                {rowData.map((obj) => (
+                {rowData.map((obj, index) => (
                   <>
                     {obj.type === "Image" ? (
-                      <img
-                        src={obj.imgUrl}
-                        style={{
-                          position: "absolute",
-                          width: obj.width,
-                          height: obj.height,
-                          top: obj.top,
-                          left: obj.left,
-                          objectFit: "cover",
-                        }}
-                      />
+                      <Link to="/">
+                        <Image
+                          key={index}
+                          imgUrl={obj.imgUrl}
+                          width={obj.width}
+                          height={obj.height}
+                          top={obj.top}
+                          left={obj.left}
+                          rotation={obj.rotation}
+                          resourceLoaded={resourceLoaded}
+                        />
+                      </Link>
                     ) : (
                       <video
                         src={obj.imgUrl}
@@ -136,15 +127,6 @@ const App = () => {
                         muted
                       />
                     )}
-
-                    {/*
-                    
-                    Add custom components here
-                    Add custom components here
-                    Add custom components here  
-                    
-                    
-                    */}
                   </>
                 ))}
               </div>
@@ -154,11 +136,11 @@ const App = () => {
                 button_top={button_top}
                 button_left={button_left}
               />
-            </TransformComponent>
-          </TransformWrapper>
-        </div>
-      </ScrollContainer>
-    </div>
+            </CustomTransformWrapper>
+          </div>
+        </ScrollContainer>
+      </div>
+    </>
   );
 };
 
@@ -180,13 +162,29 @@ const VisitStore = ({
         left: button_left,
       }}
     >
-      <a href="/edit-website-content">
+      <Link to="/edit-website-content" className="visit-store">
         <span></span>
         <span></span>
         <span></span>
         <span></span>
         Visit Store
-      </a>
+      </Link>
     </div>
   );
+};
+
+const CustomTransformWrapper = ({ canvasScale, children }) => {
+  if (canvasScale === 0) {
+    return <></>;
+  } else {
+    return (
+      <TransformWrapper
+        initialScale={Number(canvasScale)}
+        minScale={Number(canvasScale)}
+        maxScale={Number(canvasScale)}
+      >
+        <TransformComponent>{children}</TransformComponent>
+      </TransformWrapper>
+    );
+  }
 };

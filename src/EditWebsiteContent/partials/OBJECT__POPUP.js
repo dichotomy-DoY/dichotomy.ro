@@ -61,6 +61,10 @@ let objectList = [
   },
 ];
 const typeList = [{ name: "Image" }, { name: "Video" }];
+const clickActionList = [
+  { name: "Go to link" },
+  { name: "Swap with another image" },
+];
 export default ({
   open,
   newObject,
@@ -69,8 +73,6 @@ export default ({
   setObjectDetails,
   setIsNewObject,
 }) => {
-  console.log("Is New Object", newObject);
-  console.log("Object Details", objectDetails);
   const classes = useStyles();
   const [reload, setReload] = useState(false);
   const [name, setName] = useState("");
@@ -78,8 +80,12 @@ export default ({
   const [height, setHeight] = useState("");
   const [top, setTop] = useState("");
   const [left, setLeft] = useState("");
+  const [rotation, setRotation] = useState("");
   const [imgUrl, setImgUrl] = useState("");
   const [type, setType] = useState("Select Type");
+  const [clickAction, setClickAction] = useState(
+    "Select Action On Image Click"
+  );
   const [objectId, setObjectId] = useState("");
 
   useEffect(() => {
@@ -89,55 +95,65 @@ export default ({
     setHeight("");
     setTop("");
     setLeft("");
+    setRotation("");
     setImgUrl("");
     setType("Select Type");
+    setClickAction("Select Action On Image Click");
     if (open) {
       if (newObject) {
         setObjectId(Date.now());
       } else {
-        console.log("existing");
-        setObjectId(objectDetails.objectId);
-        setName(objectDetails.name);
-        setWidth(objectDetails.width);
-        setHeight(objectDetails.height);
-        setTop(objectDetails.top);
-        setLeft(objectDetails.left);
-        setImgUrl(objectDetails.imgUrl);
-        setType(objectDetails.type);
+        setObjectId(objectDetails.selectedRow.objectId);
+        setName(objectDetails.selectedRow.name);
+        setWidth(objectDetails.selectedRow.width);
+        setHeight(objectDetails.selectedRow.height);
+        setTop(objectDetails.selectedRow.top);
+        setLeft(objectDetails.selectedRow.left);
+        setRotation(objectDetails.selectedRow.rotation);
+        setImgUrl(objectDetails.selectedRow.imgUrl);
+        setType(objectDetails.selectedRow.type);
       }
     }
   }, [open]);
 
   const saveDetails = (e) => {
+    const updatedRow = {
+      objectId,
+      name,
+      type,
+      width,
+      height,
+      top,
+      left,
+      rotation,
+      imgUrl,
+    };
+    const changedObjectIndex = objectDetails.rowData.findIndex((element) => {
+      return element.objectId === objectDetails.selectedRow.objectId;
+    });
+    if (changedObjectIndex === -1) {
+      objectDetails.rowData.push(updatedRow);
+    } else {
+      objectDetails.rowData[changedObjectIndex] = updatedRow;
+    }
+
     firebase
       .database()
-      .ref("websiteContent/objects/" + objectId)
-      .set(
-        {
-          objectId,
-          name,
-          type,
-          width,
-          height,
-          top,
-          left,
-          imgUrl,
-        },
-        (error) => {
-          if (error) {
-            alert("Error Occured");
-            openMethod(false);
-            setObjectDetails({});
-            setIsNewObject(true);
-          } else {
-            alert("Saved");
-            setReload(!reload);
-            openMethod(false);
-            setObjectDetails({});
-            setIsNewObject(true);
-          }
+      .ref("websiteContent/objects/")
+      .set(objectDetails.rowData, (error) => {
+        if (error) {
+          alert("Error Occured");
+          openMethod(false);
+          setObjectDetails({});
+          setIsNewObject(true);
+        } else {
+          alert("Saved");
+          setReload(!reload);
+          openMethod(false);
+          setObjectDetails({});
+          setIsNewObject(true);
         }
-      );
+      });
   };
 
   const uploadImage = (file) => {
@@ -152,7 +168,6 @@ export default ({
           .ref("objects/" + objectId)
           .getDownloadURL()
           .then((url) => {
-            console.log(url);
             setImgUrl(url);
           })
           .catch((error) => {
@@ -251,7 +266,60 @@ export default ({
         <TextField
           margin="dense"
           id="outlined-basic"
+          label={"Rotation"}
+          variant="outlined"
+          value={rotation}
+          onChange={(e) => setRotation(e.target.value)}
+          className="ewc1--textInput"
+        />
+        <TextField
+          margin="dense"
+          id="outlined-basic"
           label={"Image URL"}
+          variant="outlined"
+          value={imgUrl}
+          onChange={(e) => setImgUrl(e.target.value)}
+          className="ewc1--textInput"
+        />
+        <Select
+          margin="dense"
+          style={{ margin: "10px", marginTop: "25px" }}
+          displayEmpty={true}
+          renderValue={() => {
+            return clickAction;
+          }}
+          labelId="demo-simple-select-outlined-label"
+          id="demo-simple-select-outlined"
+          value={clickAction}
+          onChange={(e) => setClickAction(e.target.value)}
+          autoWidth
+        >
+          {clickActionList.map((type) => (
+            <MenuItem value={type.name}>{type.name}</MenuItem>
+          ))}
+        </Select>
+        <TextField
+          style={{
+            display: clickAction.actionId === "Go to link" ? "block" : "none",
+          }}
+          margin="dense"
+          id="outlined-basic"
+          label={"Go to link"}
+          variant="outlined"
+          value={imgUrl}
+          onChange={(e) => setImgUrl(e.target.value)}
+          className="ewc1--textInput"
+        />
+        <TextField
+          style={{
+            display:
+              clickAction.actionId === "Swap with another image"
+                ? "block"
+                : "none",
+          }}
+          margin="dense"
+          id="outlined-basic"
+          label={"Swap with another image"}
           variant="outlined"
           value={imgUrl}
           onChange={(e) => setImgUrl(e.target.value)}
