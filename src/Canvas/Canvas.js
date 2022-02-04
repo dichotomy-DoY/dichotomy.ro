@@ -86,64 +86,62 @@ const App = () => {
           display: isLoading ? "none" : "block",
         }}
       >
-        <ScrollContainer className="container">
-          <CustomTransformWrapper canvasScale={3}>
-            <div
-              style={{
-                width: "max(100vw, 100vh)",
-                height: "max(100vw, 100vh)",
-              }}
-            >
-              {rowData.map((obj, index) => (
-                <>
-                  {obj.type === "Image" ? (
-                    <a
-                      href={
-                        obj.clickActionObject &&
-                        obj.clickActionObject.actionCode === 1
-                          ? obj.clickActionObject.link
-                          : "#"
-                      }
-                    >
-                      <Image
-                        key={index}
-                        imgUrl={obj.imgUrl}
-                        width={obj.width}
-                        height={obj.height}
-                        top={obj.top}
-                        left={obj.left}
-                        rotation={obj.rotation}
-                        resourceLoaded={resourceLoaded}
-                        clickActionObject={obj.clickActionObject}
-                      />
-                    </a>
-                  ) : (
-                    <video
-                      src={obj.imgUrl}
-                      style={{
-                        position: "absolute",
-                        width: obj.width,
-                        height: obj.height,
-                        top: obj.top,
-                        left: obj.left,
-                        objectFit: "cover",
-                      }}
-                      autoPlay
-                      muted
+        <CustomTransformWrapper canvasScale={3}>
+          <div
+            style={{
+              width: "max(100vw, 100vh)",
+              height: "max(100vw, 100vh)",
+            }}
+          >
+            {rowData.map((obj, index) => (
+              <>
+                {obj.type === "Image" ? (
+                  <a
+                    href={
+                      obj.clickActionObject &&
+                      obj.clickActionObject.actionCode === 1
+                        ? obj.clickActionObject.link
+                        : "#"
+                    }
+                  >
+                    <Image
+                      key={index}
+                      imgUrl={obj.imgUrl}
+                      width={obj.width}
+                      height={obj.height}
+                      top={obj.top}
+                      left={obj.left}
+                      rotation={obj.rotation}
+                      resourceLoaded={resourceLoaded}
+                      clickActionObject={obj.clickActionObject}
                     />
-                  )}
-                </>
-              ))}
-            </div>
-            <VisitStore
-              button_width={button_width}
-              button_height={button_height}
-              button_top={button_top}
-              button_left={button_left}
-              hide={hide}
-            />
-          </CustomTransformWrapper>
-        </ScrollContainer>
+                  </a>
+                ) : (
+                  <video
+                    src={obj.imgUrl}
+                    style={{
+                      position: "absolute",
+                      width: obj.width,
+                      height: obj.height,
+                      top: obj.top,
+                      left: obj.left,
+                      objectFit: "cover",
+                    }}
+                    autoPlay
+                    muted
+                  />
+                )}
+              </>
+            ))}
+          </div>
+          <VisitStore
+            button_width={button_width}
+            button_height={button_height}
+            button_top={button_top}
+            button_left={button_left}
+            hide={hide}
+          />
+        </CustomTransformWrapper>
       </div>
     </>
   );
@@ -191,7 +189,9 @@ const CustomTransformWrapper = ({ canvasScale, children }) => {
         maxScale={Number(canvasScale)}
         centerOnInit={true}
       >
-        <TransformComponent>{children}</TransformComponent>
+        <TransformComponent>
+          <ScrollContainer>{children}</ScrollContainer>
+        </TransformComponent>
       </TransformWrapper>
     );
   }
