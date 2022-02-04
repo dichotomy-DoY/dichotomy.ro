@@ -1,11 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import Radium from "radium";
 
 const Image = (props) => {
+  const [swapped, setSwapped] = useState(false);
+
   return (
     <img
-      src={props.imgUrl}
+      src={
+        swapped &&
+        props.clickActionObject &&
+        props.clickActionObject.actionCode === 2
+          ? props.clickActionObject.link
+          : props.imgUrl
+      }
       className="images"
+      onClick={() => {
+        swapped ? setSwapped(false) : setSwapped(true);
+      }}
       onLoad={props.resourceLoaded}
       style={{
         position: "absolute",

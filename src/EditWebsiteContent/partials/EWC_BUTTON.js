@@ -4,6 +4,7 @@ import { Theme, createStyles, makeStyles } from "@material-ui/core/styles";
 import {
   Button,
   TextField,
+  Switch,
   Grid,
   Accordion,
   AccordionSummary,
@@ -29,6 +30,7 @@ export default () => {
   const [height, set_height] = useState("");
   const [top, set_top] = useState("");
   const [left, set_left] = useState("");
+  const [hide, set_hide] = useState(false);
 
   const home = [
     {
@@ -62,6 +64,7 @@ export default () => {
         height,
         top,
         left,
+        hide,
       });
   };
 
@@ -71,6 +74,7 @@ export default () => {
       .ref("websiteContent/" + "button")
       .get()
       .then((snapshot) => {
+        set_hide(snapshot.val() ? snapshot.val()["hide"] : "");
         home.map((item) =>
           item.method(snapshot.val() ? snapshot.val()[item.label] : "")
         );
@@ -106,6 +110,13 @@ export default () => {
               flexDirection: "column",
             }}
           >
+            Hide Button:{" "}
+            <Switch
+              checked={hide}
+              onChange={(e) => {
+                set_hide(e.target.checked);
+              }}
+            />
             {home.map((item) => (
               <TextField
                 margin="dense"
@@ -120,7 +131,6 @@ export default () => {
                 className="ewc1--textInput"
               />
             ))}
-
             <Button
               onClick={() => updateButtonDetails()}
               variant="contained"

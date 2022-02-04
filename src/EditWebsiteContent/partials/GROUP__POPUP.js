@@ -5,6 +5,7 @@ import {
   Button,
   TextField,
   Dialog,
+  Switch,
   AppBar,
   Toolbar,
   Typography,
@@ -44,16 +45,19 @@ export default ({
   const [objectId, setObjectId] = useState("");
   const isGroup = true;
   const [name, setName] = useState("");
+  const [hide, setHide] = useState(false);
 
   useEffect(() => {
     setObjectId("");
     setName("");
+    setHide(false);
     if (open) {
       if (newObject) {
         setObjectId(Date.now());
       } else {
         setObjectId(objectDetails.selectedRow.objectId);
         setName(objectDetails.selectedRow.name);
+        setHide(objectDetails.selectedRow.hide);
       }
     }
   }, [open]);
@@ -87,6 +91,7 @@ export default ({
       objectId,
       isGroup,
       name,
+      hide,
     };
     const changedObjectIndex = objectDetails.rowData.findIndex(
       (element) => element.objectId === objectDetails.selectedRow.objectId
@@ -153,6 +158,13 @@ export default ({
             </Button>
           </Toolbar>
         </AppBar>
+        Hide all elements in this group:{" "}
+        <Switch
+          checked={hide}
+          onChange={(e) => {
+            setHide(e.target.checked);
+          }}
+        />
         <TextField
           required
           margin="dense"

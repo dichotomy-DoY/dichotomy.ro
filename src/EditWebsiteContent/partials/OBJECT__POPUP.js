@@ -62,8 +62,9 @@ let objectList = [
 ];
 const typeList = [{ name: "Image" }, { name: "Video" }];
 const clickActionList = [
-  { name: "Go to link" },
-  { name: "Swap with another image" },
+  { name: "None", actionCode: 0 },
+  { name: "Go to link", actionCode: 1 },
+  { name: "Swap with another image", actionCode: 2 },
 ];
 export default ({
   open,
@@ -82,10 +83,11 @@ export default ({
   const [left, setLeft] = useState("");
   const [rotation, setRotation] = useState("");
   const [imgUrl, setImgUrl] = useState("");
+  const [clickActionObject, setClickActionObject] = useState({
+    actionCode: 0,
+    link: "",
+  });
   const [type, setType] = useState("Select Type");
-  const [clickAction, setClickAction] = useState(
-    "Select Action On Image Click"
-  );
   const [objectId, setObjectId] = useState("");
 
   useEffect(() => {
@@ -97,8 +99,11 @@ export default ({
     setLeft("");
     setRotation("");
     setImgUrl("");
+    setClickActionObject({
+      actionCode: 0,
+      link: "",
+    });
     setType("Select Type");
-    setClickAction("Select Action On Image Click");
     if (open) {
       if (newObject) {
         setObjectId(Date.now());
@@ -111,10 +116,15 @@ export default ({
         setLeft(objectDetails.selectedRow.left);
         setRotation(objectDetails.selectedRow.rotation);
         setImgUrl(objectDetails.selectedRow.imgUrl);
+        setClickActionObject(objectDetails.selectedRow.clickActionObject);
         setType(objectDetails.selectedRow.type);
       }
     }
   }, [open]);
+
+  useEffect(() => {
+    console.log(clickActionObject);
+  }, [clickActionObject]);
 
   const saveDetails = (e) => {
     const updatedRow = {
@@ -127,6 +137,7 @@ export default ({
       left,
       rotation,
       imgUrl,
+      clickActionObject,
     };
     const changedObjectIndex = objectDetails.rowData.findIndex((element) => {
       return element.objectId === objectDetails.selectedRow.objectId;
@@ -136,7 +147,6 @@ export default ({
     } else {
       objectDetails.rowData[changedObjectIndex] = updatedRow;
     }
-
     firebase
       .database()
       .ref("websiteContent/objects/")
@@ -156,7 +166,7 @@ export default ({
       });
   };
 
-  const uploadImage = (file) => {
+  const uploadImage = (file, swappedImage = false) => {
     firebase
       .storage()
       .ref("objects/" + objectId)
@@ -168,7 +178,9 @@ export default ({
           .ref("objects/" + objectId)
           .getDownloadURL()
           .then((url) => {
-            setImgUrl(url);
+            swappedImage
+              ? setClickActionObject({ actionCode: 2, link: url })
+              : setImgUrl(url);
           })
           .catch((error) => {
             alert("error");
@@ -286,62 +298,98 @@ export default ({
           style={{ margin: "10px", marginTop: "25px" }}
           displayEmpty={true}
           renderValue={() => {
-            return clickAction;
+            return "Select Action On Image Click";
           }}
           labelId="demo-simple-select-outlined-label"
           id="demo-simple-select-outlined"
-          value={clickAction}
-          onChange={(e) => setClickAction(e.target.value)}
+          value="Select Action On Image Click"
+          onChange={(e) =>
+            setClickActionObject({ actionCode: e.target.value, link: "" })
+          }
           autoWidth
         >
           {clickActionList.map((type) => (
-            <MenuItem value={type.name}>{type.name}</MenuItem>
+            <MenuItem value={type.actionCode}>{type.name}</MenuItem>
           ))}
         </Select>
         <TextField
           style={{
-            display: clickAction.actionId === "Go to link" ? "block" : "none",
+            display: clickActionObject.actionCode === 1 ? "flex" : "none",
           }}
           margin="dense"
           id="outlined-basic"
-          label={"Go to link"}
+          label={"Link to be redirected to"}
           variant="outlined"
-          value={imgUrl}
-          onChange={(e) => setImgUrl(e.target.value)}
+          value={clickActionObject.link}
+          onChange={(e) =>
+            setClickActionObject({ actionCode: 1, link: e.target.value })
+          }
           className="ewc1--textInput"
         />
         <TextField
           style={{
-            display:
-              clickAction.actionId === "Swap with another image"
-                ? "block"
-                : "none",
+            display: clickActionObject.actionCode === 2 ? "flex" : "none",
           }}
           margin="dense"
           id="outlined-basic"
-          label={"Swap with another image"}
+          label={"Image URL to be swapped with"}
           variant="outlined"
-          value={imgUrl}
-          onChange={(e) => setImgUrl(e.target.value)}
+          value={clickActionObject.link}
+          onChange={(e) =>
+            setClickActionObject({ actionCode: 2, link: e.target.value })
+          }
           className="ewc1--textInput"
         />
-        <h3>Upload Image</h3>
-        <img
-          src={imgUrl}
+        <div
           style={{
-            width: "125px",
-            height: "125px",
-            margin: "5px",
-            objectFit: "cover",
+            display: "flex",
           }}
-        />
-        <input
-          style={{
-            justifySelf: "center",
-          }}
-          type="file"
-          onChange={(e) => uploadImage(e.target.files[0])}
-        />
+        >
+          <div>
+            <h3>Upload Image</h3>
+            <img
+              src={imgUrl}
+              style={{
+                width: "125px",
+                height: "125px",
+                margin: "5px",
+                objectFit: "cover",
+                display: "block",
+              }}
+            />
+            <input
+              style={{
+                justifySelf: "center",
+              }}
+              type="file"
+              onChange={(e) => uploadImage(e.target.files[0])}
+            />
+          </div>
+          <div
+            style={{
+              display: clickActionObject.actionCode === 2 ? "block" : "none",
+            }}
+          >
+            <h3>Swapped Image</h3>
+            <img
+              src={clickActionObject.link}
+              style={{
+                width: "125px",
+                height: "125px",
+                margin: "5px",
+                objectFit: "cover",
+                display: "block",
+              }}
+            />
+            <input
+              style={{
+                justifySelf: "center",
+              }}
+              type="file"
+              onChange={(e) => uploadImage(e.target.files[0], true)}
+            />
+          </div>
+        </div>
       </Dialog>
     </>
   );

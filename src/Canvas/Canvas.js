@@ -18,6 +18,7 @@ const App = () => {
   const [button_height, set_button_height] = useState("");
   const [button_top, set_button_top] = useState("");
   const [button_left, set_button_left] = useState("");
+  const [hide, set_hide] = useState(false);
 
   useEffect(() => {
     firebase
@@ -37,6 +38,7 @@ const App = () => {
           }, 0)
         );
         setRowData(data);
+        //console.log(data);
       });
     firebase
       .database()
@@ -54,6 +56,7 @@ const App = () => {
         set_button_height(snapshot.val().height);
         set_button_top(snapshot.val().top);
         set_button_left(snapshot.val().left);
+        set_hide(snapshot.val().hide);
       });
   }, []);
 
@@ -83,61 +86,63 @@ const App = () => {
           display: isLoading ? "none" : "block",
         }}
       >
-        <ScrollContainer
-          className="container"
-          vertical={false}
-          horizontal={false}
-        >
-          <div>
-            <CustomTransformWrapper canvasScale={canvasScale}>
-              <div
-                style={{
-                  width: 100 + "vw",
-                  height: 100 + "vh",
-                }}
-                className="canvas__container"
-              >
-                {rowData.map((obj, index) => (
-                  <>
-                    {obj.type === "Image" ? (
-                      <Link to="/">
-                        <Image
-                          key={index}
-                          imgUrl={obj.imgUrl}
-                          width={obj.width}
-                          height={obj.height}
-                          top={obj.top}
-                          left={obj.left}
-                          rotation={obj.rotation}
-                          resourceLoaded={resourceLoaded}
-                        />
-                      </Link>
-                    ) : (
-                      <video
-                        src={obj.imgUrl}
-                        style={{
-                          position: "absolute",
-                          width: obj.width,
-                          height: obj.height,
-                          top: obj.top,
-                          left: obj.left,
-                          objectFit: "cover",
-                        }}
-                        autoPlay
-                        muted
+        <ScrollContainer className="container">
+          <CustomTransformWrapper canvasScale={3}>
+            <div
+              style={{
+                width: "max(100vw, 100vh)",
+                height: "max(100vw, 100vh)",
+              }}
+            >
+              {rowData.map((obj, index) => (
+                <>
+                  {obj.type === "Image" ? (
+                    <a
+                      href={
+                        obj.clickActionObject &&
+                        obj.clickActionObject.actionCode === 1
+                          ? obj.clickActionObject.link
+                          : "#"
+                      }
+                    >
+                      <Image
+                        key={index}
+                        imgUrl={obj.imgUrl}
+                        width={obj.width}
+                        height={obj.height}
+                        top={obj.top}
+                        left={obj.left}
+                        rotation={obj.rotation}
+                        resourceLoaded={resourceLoaded}
+                        clickActionObject={obj.clickActionObject}
                       />
-                    )}
-                  </>
-                ))}
-              </div>
-              <VisitStore
-                button_width={button_width}
-                button_height={button_height}
-                button_top={button_top}
-                button_left={button_left}
-              />
-            </CustomTransformWrapper>
-          </div>
+                    </a>
+                  ) : (
+                    <video
+                      src={obj.imgUrl}
+                      style={{
+                        position: "absolute",
+                        width: obj.width,
+                        height: obj.height,
+                        top: obj.top,
+                        left: obj.left,
+                        objectFit: "cover",
+                      }}
+                      autoPlay
+                      muted
+                    />
+                  )}
+                </>
+              ))}
+            </div>
+            <VisitStore
+              button_width={button_width}
+              button_height={button_height}
+              button_top={button_top}
+              button_left={button_left}
+              hide={hide}
+            />
+          </CustomTransformWrapper>
         </ScrollContainer>
       </div>
     </>
@@ -151,10 +156,12 @@ const VisitStore = ({
   button_height,
   button_top,
   button_left,
+  hide,
 }) => {
   return (
     <div
       style={{
+        display: hide ? "none" : "block",
         position: "absolute",
         width: button_width,
         height: button_height,
@@ -182,6 +189,7 @@ const CustomTransformWrapper = ({ canvasScale, children }) => {
         initialScale={Number(canvasScale)}
         minScale={Number(canvasScale)}
         maxScale={Number(canvasScale)}
+        centerOnInit={true}
       >
         <TransformComponent>{children}</TransformComponent>
       </TransformWrapper>
