@@ -97,8 +97,10 @@ export default ({
       (element) => element.objectId === objectDetails.selectedRow.objectId
     );
     if (changedObjectIndex === -1) {
+      // new group
       objectDetails.rowData.push(updatedGroup);
     } else {
+      // group is edited
       objectDetails.rowData[changedObjectIndex] = updatedGroup;
     }
 
@@ -166,7 +168,7 @@ export default ({
           }}
         />
         <TextField
-          required
+          required={true}
           margin="dense"
           id="outlined-basic"
           label={"Name"}

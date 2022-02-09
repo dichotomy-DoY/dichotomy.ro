@@ -19,6 +19,7 @@ const Image = (props) => {
       }}
       onLoad={props.resourceLoaded}
       style={{
+        display: props.hideImg ? "none" : "",
         position: "absolute",
         width: props.width,
         height: props.height,

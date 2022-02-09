@@ -28,15 +28,29 @@ const App = () => {
       .then((snapshot) => {
         let data = snapshot.val();
 
-        setTotalResourcesToBeLoaded(
-          data.reduce((sum, value) => {
-            if (value.imgUrl) {
-              return sum + 1;
-            } else {
-              return sum;
-            }
-          }, 0)
-        );
+        // setTotalResourcesToBeLoaded(
+        //   data.reduce((sum, value) => {
+        //     if (value.imgUrl) {
+        //       return sum + 1;
+        //     } else {
+        //       return sum;
+        //     }
+        //   }, 0)
+        // );
+
+        let hide = false;
+        let totalResourcesToBeLoaded = 0;
+        data.forEach((item) => {
+          if (item.imgUrl) {
+            totalResourcesToBeLoaded = totalResourcesToBeLoaded + 1;
+          } else {
+            hide = item.hide;
+          }
+          item.hideImg = hide;
+        });
+
+        setTotalResourcesToBeLoaded(totalResourcesToBeLoaded);
+
         setRowData(data);
         //console.log(data);
       });
@@ -86,7 +100,7 @@ const App = () => {
           display: isLoading ? "none" : "block",
         }}
       >
-        <CustomTransformWrapper canvasScale={3}>
+        <CustomTransformWrapper canvasScale={canvasScale}>
           <div
             style={{
               width: "max(100vw, 100vh)",
@@ -103,6 +117,12 @@ const App = () => {
                         ? obj.clickActionObject.link
                         : "#"
                     }
+                    target={
+                      obj.clickActionObject &&
+                      obj.clickActionObject.actionCode === 1
+                        ? "_blank"
+                        : ""
+                    }
                   >
                     <Image
                       key={index}
@@ -114,6 +134,7 @@ const App = () => {
                       rotation={obj.rotation}
                       resourceLoaded={resourceLoaded}
                       clickActionObject={obj.clickActionObject}
+                      hideImg={obj.hideImg}
                     />
                   </a>
                 ) : (

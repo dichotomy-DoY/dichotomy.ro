@@ -45,6 +45,7 @@ export default () => {
   const home = [
     {
       label: "Canvas Scale (1-8)",
+      property: "canvasScale",
       value: canvasScale,
       method: setCanvasScale,
     },
@@ -66,7 +67,7 @@ export default () => {
       .get()
       .then((snapshot) => {
         home.map((item) =>
-          item.method(snapshot.val() ? snapshot.val()[item.label] : "")
+          item.method(snapshot.val() ? snapshot.val()[item.property] : 0)
         );
       });
   }, []);

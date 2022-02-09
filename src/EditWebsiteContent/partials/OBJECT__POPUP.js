@@ -81,7 +81,7 @@ export default ({
   const [height, setHeight] = useState("");
   const [top, setTop] = useState("");
   const [left, setLeft] = useState("");
-  const [rotation, setRotation] = useState("");
+  const [rotation, setRotation] = useState("0");
   const [imgUrl, setImgUrl] = useState("");
   const [clickActionObject, setClickActionObject] = useState({
     actionCode: 0,
@@ -97,7 +97,7 @@ export default ({
     setHeight("");
     setTop("");
     setLeft("");
-    setRotation("");
+    setRotation("0");
     setImgUrl("");
     setClickActionObject({
       actionCode: 0,
@@ -276,6 +276,7 @@ export default ({
           className="ewc1--textInput"
         />
         <TextField
+          required
           margin="dense"
           id="outlined-basic"
           label={"Rotation"}
@@ -285,6 +286,7 @@ export default ({
           className="ewc1--textInput"
         />
         <TextField
+          required
           margin="dense"
           id="outlined-basic"
           label={"Image URL"}
@@ -330,6 +332,7 @@ export default ({
           style={{
             display: clickActionObject.actionCode === 2 ? "flex" : "none",
           }}
+          required={clickActionObject.actionCode === 2}
           margin="dense"
           id="outlined-basic"
           label={"Image URL to be swapped with"}

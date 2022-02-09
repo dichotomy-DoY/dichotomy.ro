@@ -262,7 +262,7 @@ export default () => {
             </div>
             <div
               className="ag-theme-alpine"
-              style={{ height: "65vh", width: "100%", maxWidth: "1200px" }}
+              style={{ height: "100vh", width: "100%" }}
             >
               <AgGridReact
                 gridOptions={gridOptions}
