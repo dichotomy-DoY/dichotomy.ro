@@ -4,7 +4,6 @@ import "./styles.css";
 
 import Canvas from "./Canvas/Canvas";
 import EditWebsiteContent from "./EditWebsiteContent/EditWebsiteContent";
-import GridExample from "./EditWebsiteContent/partials/GridExample";
 
 const App = () => (
   <>

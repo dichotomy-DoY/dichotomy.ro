@@ -169,13 +169,13 @@ export default ({
   const uploadImage = (file, swappedImage = false) => {
     firebase
       .storage()
-      .ref("objects/" + objectId)
+      .ref(`objects/${objectId}${swappedImage ? "-s" : ""}`)
       .put(file)
       .then((snapshot) => {
         alert("Object uploaded");
         firebase
           .storage()
-          .ref("objects/" + objectId)
+          .ref(`objects/${objectId}${swappedImage ? "-s" : ""}`)
           .getDownloadURL()
           .then((url) => {
             swappedImage

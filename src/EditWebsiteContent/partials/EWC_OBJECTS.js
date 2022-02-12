@@ -73,6 +73,7 @@ export default () => {
   const [groupOpen, setGroupOpen] = React.useState(false);
   const [reload, setReload] = useState(false);
   const [rowData, setRowData] = useState([]);
+  const [rowOrderData, setRowOrderData] = useState([]);
   const [objectDetails, setObjectDetails] = useState({
     rowData: [],
     selectedRow: {},
@@ -80,12 +81,12 @@ export default () => {
   const [isNewObject, setIsNewObject] = useState(true);
 
   const handleClickOpen = () => {
-    setObjectDetails({ rowData, selectedRow: {} });
+    setObjectDetails({ rowData: rowOrderData, selectedRow: {} });
     setOpen(true);
   };
 
   const handleGroupClickOpen = () => {
-    setObjectDetails({ rowData, selectedRow: {} });
+    setObjectDetails({ rowData: rowOrderData, selectedRow: {} });
     setGroupOpen(true);
   };
 
@@ -96,7 +97,9 @@ export default () => {
       .get()
       .then((snapshot) => {
         setRowData(snapshot.val().objects);
-      });
+        setRowOrderData(snapshot.val().objects);
+      })
+      .catch((error) => console.log(error));
   }, [open, groupOpen]);
 
   const saveOrderDetails = (updatedRowData) => {
@@ -207,15 +210,11 @@ export default () => {
     let movedData = movedNode.data;
     let toIndex = movedNode.rowIndex;
 
-    console.log(rowData);
-
     // update rowOrderData array, state does not need to be updated
-    let updatedRowData = array_move(rowData, movedData.objectId, toIndex);
-
-    console.log(updatedRowData);
+    let updatedRowData = array_move(rowOrderData, movedData.objectId, toIndex);
 
     // update state
-    setRowData(updatedRowData);
+    setRowOrderData(updatedRowData);
 
     // update row order
     saveOrderDetails(updatedRowData);
@@ -268,7 +267,10 @@ export default () => {
                 gridOptions={gridOptions}
                 rowData={rowData}
                 onRowDoubleClicked={(e) => {
-                  setObjectDetails({ rowData, selectedRow: e.data });
+                  setObjectDetails({
+                    rowData: rowOrderData,
+                    selectedRow: e.data,
+                  });
                   setIsNewObject(false);
                   e.data.isGroup ? setGroupOpen(true) : setOpen(true);
                 }}

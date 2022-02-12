@@ -52,7 +52,6 @@ const App = () => {
         setTotalResourcesToBeLoaded(totalResourcesToBeLoaded);
 
         setRowData(data);
-        //console.log(data);
       });
     firebase
       .database()
