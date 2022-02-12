@@ -3,19 +3,37 @@ import Radium from "radium";
 
 const Image = (props) => {
   const [swapped, setSwapped] = useState(false);
+  const [played, setPlayed] = useState(false);
 
   return (
     <img
       src={
-        swapped &&
-        props.clickActionObject &&
-        props.clickActionObject.actionCode === 2
+        (swapped &&
+          props.clickActionObject &&
+          props.clickActionObject.actionCode === 2) ||
+        (!played &&
+          props.clickActionObject &&
+          props.clickActionObject.actionCode === 3)
           ? props.clickActionObject.link
           : props.imgUrl
       }
       className="images"
       onClick={() => {
-        swapped ? setSwapped(false) : setSwapped(true);
+        if (
+          props.clickActionObject &&
+          props.clickActionObject.actionCode === 2
+        ) {
+          swapped ? setSwapped(false) : setSwapped(true);
+        } else if (
+          !played &&
+          props.clickActionObject &&
+          props.clickActionObject.actionCode === 3
+        ) {
+          setPlayed(true);
+          setTimeout(() => {
+            setPlayed(false);
+          }, props.clickActionObject.gifDuration * 1000);
+        }
       }}
       onLoad={props.resourceLoaded}
       style={{

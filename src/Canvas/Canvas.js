@@ -91,7 +91,7 @@ const App = () => {
         style={{
           display: isLoading ? "block" : "none",
           backgroundImage: `url(${loadingGIF})`,
-          backgroundSize: `20%`,
+          backgroundSize: `max(20vw, 20vh)`,
         }}
       />
       <div
@@ -202,12 +202,15 @@ const CustomTransformWrapper = ({ canvasScale, children }) => {
   if (canvasScale === 0) {
     return <></>;
   } else {
+    const canvasWidthAndHeight =
+      Math.max(window.innerWidth, window.innerHeight) * canvasScale;
     return (
       <TransformWrapper
         initialScale={Number(canvasScale)}
         minScale={Number(canvasScale)}
         maxScale={Number(canvasScale)}
-        centerOnInit={true}
+        initialPositionX={-(canvasWidthAndHeight - window.innerWidth) / 2}
+        initialPositionY={-(canvasWidthAndHeight - window.innerHeight) / 2}
       >
         <TransformComponent>
           <ScrollContainer>{children}</ScrollContainer>

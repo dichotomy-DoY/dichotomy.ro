@@ -115,17 +115,25 @@ export default () => {
       });
   };
 
+  const getRowOrderData = async () => {
+    const objects = await (
+      await firebase.database().ref("websiteContent").get()
+    ).val().objects;
+
+    return objects;
+  };
+
   const BtnCellRenderer = (props) => {
     return (
       <DeleteIcon
         color="secondary"
-        onClick={() => {
-          let data = props.agGridReact.props.rowData;
-          console.log(data);
+        onClick={async () => {
+          //let data = props.agGridReact.props.rowData;
+
+          let data = await getRowOrderData();
           data = data.filter(
             (element) => element.objectId !== props.data.objectId
           );
-          console.log(data);
           firebase
             .database()
             .ref("websiteContent/objects/")
@@ -133,8 +141,9 @@ export default () => {
               if (error) {
                 alert("Error Occured");
               } else {
-                //alert("Deleted");
                 setRowData(data);
+                setRowOrderData(data);
+                alert("Deleted");
               }
             });
         }}
@@ -159,7 +168,13 @@ export default () => {
     // enable sorting on 'name' and 'age' columns only
     columnDefs: [
       { field: "type", sortable: true, filter: true },
-      { field: "name", sortable: true, filter: true, rowDrag: true },
+      {
+        field: "name",
+        sortable: true,
+        filter: true,
+        rowDrag: true,
+        width: 300,
+      },
       { field: "width", sortable: true, filter: true },
       { field: "height", sortable: true, filter: true },
       { field: "top", sortable: true, filter: true },

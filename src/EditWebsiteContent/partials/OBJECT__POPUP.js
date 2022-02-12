@@ -65,6 +65,7 @@ const clickActionList = [
   { name: "None", actionCode: 0 },
   { name: "Go to link", actionCode: 1 },
   { name: "Swap with another image", actionCode: 2 },
+  { name: "Loop GIF once", actionCode: 3 },
 ];
 export default ({
   open,
@@ -86,6 +87,7 @@ export default ({
   const [clickActionObject, setClickActionObject] = useState({
     actionCode: 0,
     link: "",
+    gifDuration: 0,
   });
   const [type, setType] = useState("Select Type");
   const [objectId, setObjectId] = useState("");
@@ -102,6 +104,7 @@ export default ({
     setClickActionObject({
       actionCode: 0,
       link: "",
+      gifDuration: 0,
     });
     setType("Select Type");
     if (open) {
@@ -166,20 +169,20 @@ export default ({
       });
   };
 
-  const uploadImage = (file, swappedImage = false) => {
+  const uploadImage = (file, actionCode) => {
     firebase
       .storage()
-      .ref(`objects/${objectId}${swappedImage ? "-s" : ""}`)
+      .ref(`objects/${objectId}${actionCode !== 0 ? "-s" : ""}`)
       .put(file)
       .then((snapshot) => {
         alert("Object uploaded");
         firebase
           .storage()
-          .ref(`objects/${objectId}${swappedImage ? "-s" : ""}`)
+          .ref(`objects/${objectId}${actionCode !== 0 ? "-s" : ""}`)
           .getDownloadURL()
           .then((url) => {
-            swappedImage
-              ? setClickActionObject({ actionCode: 2, link: url })
+            actionCode !== 0
+              ? setClickActionObject({ ...clickActionObject, link: url })
               : setImgUrl(url);
           })
           .catch((error) => {
@@ -305,9 +308,7 @@ export default ({
           labelId="demo-simple-select-outlined-label"
           id="demo-simple-select-outlined"
           value="Select Action On Image Click"
-          onChange={(e) =>
-            setClickActionObject({ actionCode: e.target.value, link: "" })
-          }
+          onChange={(e) => setClickActionObject({ actionCode: e.target.value })}
           autoWidth
         >
           {clickActionList.map((type) => (
@@ -324,7 +325,7 @@ export default ({
           variant="outlined"
           value={clickActionObject.link}
           onChange={(e) =>
-            setClickActionObject({ actionCode: 1, link: e.target.value })
+            setClickActionObject({ ...clickActionObject, link: e.target.value })
           }
           className="ewc1--textInput"
         />
@@ -339,7 +340,38 @@ export default ({
           variant="outlined"
           value={clickActionObject.link}
           onChange={(e) =>
-            setClickActionObject({ actionCode: 2, link: e.target.value })
+            setClickActionObject({ ...clickActionObject, link: e.target.value })
+          }
+          className="ewc1--textInput"
+        />
+        <TextField
+          style={{
+            display: clickActionObject.actionCode === 3 ? "flex" : "none",
+          }}
+          margin="dense"
+          id="outlined-basic"
+          label={"GIF First Frame URL"}
+          variant="outlined"
+          value={clickActionObject.link}
+          onChange={(e) =>
+            setClickActionObject({ ...clickActionObject, link: e.target.value })
+          }
+          className="ewc1--textInput"
+        />
+        <TextField
+          style={{
+            display: clickActionObject.actionCode === 3 ? "flex" : "none",
+          }}
+          margin="dense"
+          id="outlined-basic"
+          label={"GIF Duration"}
+          variant="outlined"
+          value={clickActionObject.gifDuration}
+          onChange={(e) =>
+            setClickActionObject({
+              ...clickActionObject,
+              gifDuration: e.target.value,
+            })
           }
           className="ewc1--textInput"
         />
@@ -365,7 +397,7 @@ export default ({
                 justifySelf: "center",
               }}
               type="file"
-              onChange={(e) => uploadImage(e.target.files[0])}
+              onChange={(e) => uploadImage(e.target.files[0], 0)}
             />
           </div>
           <div
@@ -373,7 +405,7 @@ export default ({
               display: clickActionObject.actionCode === 2 ? "block" : "none",
             }}
           >
-            <h3>Swapped Image</h3>
+            <h3>Upload image to be swapped with</h3>
             <img
               src={clickActionObject.link}
               style={{
@@ -389,7 +421,31 @@ export default ({
                 justifySelf: "center",
               }}
               type="file"
-              onChange={(e) => uploadImage(e.target.files[0], true)}
+              onChange={(e) => uploadImage(e.target.files[0], 2)}
+            />
+          </div>
+          <div
+            style={{
+              display: clickActionObject.actionCode === 3 ? "block" : "none",
+            }}
+          >
+            <h3>Upload GIF first frame</h3>
+            <img
+              src={clickActionObject.link}
+              style={{
+                width: "125px",
+                height: "125px",
+                margin: "5px",
+                objectFit: "cover",
+                display: "block",
+              }}
+            />
+            <input
+              style={{
+                justifySelf: "center",
+              }}
+              type="file"
+              onChange={(e) => uploadImage(e.target.files[0], 3)}
             />
           </div>
         </div>
