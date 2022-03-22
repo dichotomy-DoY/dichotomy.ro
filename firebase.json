@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site":"dichotomy-ro",
+    "site":"dev-dichotomy-ro",
     "public": "build",
     "ignore": [
       "firebase.json",

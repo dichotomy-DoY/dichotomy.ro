@@ -51,7 +51,7 @@ const Image = (props) => {
 
         ":hover": {
           transform: `rotate(${props.rotation}deg) ${
-            window.innerWidth > 768 ? "scale(1.25)" : ""
+            window.innerWidth > 768 ? `scale(${props.onHoverScale})` : ""
           }`,
           zIndex: 2,
         },

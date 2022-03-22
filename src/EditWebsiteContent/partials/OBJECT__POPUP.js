@@ -83,6 +83,7 @@ export default ({
   const [top, setTop] = useState("");
   const [left, setLeft] = useState("");
   const [rotation, setRotation] = useState("0");
+  const [onHoverScale, setOnHoverScale] = useState("1.25");
   const [imgUrl, setImgUrl] = useState("");
   const [clickActionObject, setClickActionObject] = useState({
     actionCode: 0,
@@ -100,6 +101,7 @@ export default ({
     setTop("");
     setLeft("");
     setRotation("0");
+    setOnHoverScale("1.25");
     setImgUrl("");
     setClickActionObject({
       actionCode: 0,
@@ -118,6 +120,7 @@ export default ({
         setTop(objectDetails.selectedRow.top);
         setLeft(objectDetails.selectedRow.left);
         setRotation(objectDetails.selectedRow.rotation);
+        setOnHoverScale(objectDetails.selectedRow.onHoverScale);
         setImgUrl(objectDetails.selectedRow.imgUrl);
         setClickActionObject(objectDetails.selectedRow.clickActionObject);
         setType(objectDetails.selectedRow.type);
@@ -139,6 +142,7 @@ export default ({
       top,
       left,
       rotation,
+      onHoverScale,
       imgUrl,
       clickActionObject,
     };
@@ -162,9 +166,9 @@ export default ({
         } else {
           alert("Saved");
           setReload(!reload);
-          openMethod(false);
-          setObjectDetails({});
-          setIsNewObject(true);
+          //openMethod(false);
+          //setObjectDetails({});
+          //setIsNewObject(true);
         }
       });
   };
@@ -286,6 +290,16 @@ export default ({
           variant="outlined"
           value={rotation}
           onChange={(e) => setRotation(e.target.value)}
+          className="ewc1--textInput"
+        />
+        <TextField
+          required
+          margin="dense"
+          id="outlined-basic"
+          label={"On Hover Scale"}
+          variant="outlined"
+          value={onHoverScale}
+          onChange={(e) => setOnHoverScale(e.target.value)}
           className="ewc1--textInput"
         />
         <TextField

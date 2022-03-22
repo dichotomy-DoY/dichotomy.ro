@@ -180,6 +180,7 @@ export default () => {
       { field: "top", sortable: true, filter: true },
       { field: "left", sortable: true, filter: true },
       { field: "rotation", sortable: true, filter: true },
+      { field: "onHoverScale", sortable: true, filter: true },
       { cellRenderer: "btnCellRenderer", minWidth: 150 },
     ],
     frameworkComponents: {

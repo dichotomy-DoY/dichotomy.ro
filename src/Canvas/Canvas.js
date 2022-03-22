@@ -6,9 +6,10 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import firebase from "../firebase";
 import Image from "../Image/Image";
 import loadingGIF from "./loading.gif";
+import ProgressBar from "@ramonak/react-progress-bar";
 
 const App = () => {
-  let numberOfResourcesLoaded = 0;
+  const [numberOfResourcesLoaded, setNumberOfResourcesLoaded] = useState(0);
   const [totalResourcesToBeLoaded, setTotalResourcesToBeLoaded] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -20,6 +21,8 @@ const App = () => {
   const [button_left, set_button_left] = useState("");
   const [hide, set_hide] = useState(false);
 
+  //const videoElement = React.useRef(null);
+
   useEffect(() => {
     firebase
       .database()
@@ -27,17 +30,6 @@ const App = () => {
       .get()
       .then((snapshot) => {
         let data = snapshot.val();
-
-        // setTotalResourcesToBeLoaded(
-        //   data.reduce((sum, value) => {
-        //     if (value.imgUrl) {
-        //       return sum + 1;
-        //     } else {
-        //       return sum;
-        //     }
-        //   }, 0)
-        // );
-
         let hide = false;
         let totalResourcesToBeLoaded = 0;
         data.forEach((item) => {
@@ -50,7 +42,6 @@ const App = () => {
         });
 
         setTotalResourcesToBeLoaded(totalResourcesToBeLoaded);
-
         setRowData(data);
       });
     firebase
@@ -73,15 +64,25 @@ const App = () => {
       });
   }, []);
 
-  const resourceLoaded = () => {
-    ++numberOfResourcesLoaded;
+  // useEffect(()=>{
+  //   if(videoElement && videoElement.current) {
+  //     videoElement.current.addEventListener('canplaythrough', resourceLoaded, {once:true});
+  //     return () => videoElement.current.removeEventListener('canplaythrough', resourceLoaded);
+  //   }
+  // });
+
+  useEffect(() => {
     console.log(
       `resources loaded: ${numberOfResourcesLoaded}/${totalResourcesToBeLoaded}`
     );
-    if (numberOfResourcesLoaded == totalResourcesToBeLoaded) {
-      setIsLoading(false);
+    if (numberOfResourcesLoaded === totalResourcesToBeLoaded - 1 && totalResourcesToBeLoaded !== 0) {
       console.log("Everything loaded");
+      setIsLoading(false); 
     }
+  }, [numberOfResourcesLoaded]);
+
+  const resourceLoaded = () => {
+    setNumberOfResourcesLoaded(numberOfResourcesLoaded + 1);
   };
 
   return (
@@ -93,7 +94,14 @@ const App = () => {
           backgroundImage: `url(${loadingGIF})`,
           backgroundSize: `max(20vw, 20vh)`,
         }}
-      />
+      >
+        <ProgressBar
+          completed={Math.floor((numberOfResourcesLoaded / totalResourcesToBeLoaded) * 100)}
+          isLabelVisible={false}
+          className="progress-bar"
+          barContainerClassName="progress-bar-container"
+        />
+      </div>
       <div
         style={{
           display: isLoading ? "none" : "block",
@@ -112,13 +120,13 @@ const App = () => {
                   <a
                     href={
                       obj.clickActionObject &&
-                      obj.clickActionObject.actionCode === 1
+                        obj.clickActionObject.actionCode === 1
                         ? obj.clickActionObject.link
                         : "#"
                     }
                     target={
                       obj.clickActionObject &&
-                      obj.clickActionObject.actionCode === 1
+                        obj.clickActionObject.actionCode === 1
                         ? "_blank"
                         : ""
                     }
@@ -131,12 +139,13 @@ const App = () => {
                       top={obj.top}
                       left={obj.left}
                       rotation={obj.rotation}
+                      onHoverScale={obj.onHoverScale}
                       resourceLoaded={resourceLoaded}
                       clickActionObject={obj.clickActionObject}
                       hideImg={obj.hideImg}
                     />
                   </a>
-                ) : (
+                ) : (obj.type === "Video" ? (
                   <video
                     src={obj.imgUrl}
                     style={{
@@ -146,11 +155,12 @@ const App = () => {
                       top: obj.top,
                       left: obj.left,
                       objectFit: "cover",
-                    }}
+                    }}                    
                     autoPlay
+                    loop
                     muted
                   />
-                )}
+                ) : '')}
               </>
             ))}
           </div>
