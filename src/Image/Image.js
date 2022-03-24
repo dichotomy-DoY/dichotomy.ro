@@ -18,14 +18,12 @@ const Image = (props) => {
           }}
           onLoad={props.resourceLoaded}
           style={{
-            display: props.hideImg ? "none" : "",
             position: "absolute",
             width: props.width,
             height: props.height,
             top: props.top,
             left: props.left,
             transform: "rotate(" + props.rotation + "deg)",
-            // objectFit: "contain",
             pointerEvents: swapped ? "none" : "auto",
             transition: "transform 0.2s, opacity 1s linear",
             zIndex: 1,
@@ -44,16 +42,14 @@ const Image = (props) => {
           onClick={() => {
             swapped ? setSwapped(false) : setSwapped(true);
           }}
-          onLoad={props.resourceLoaded}
           style={{
-            display: props.hideImg ? "none" : "",
+
             position: "absolute",
             width: props.width,
             height: props.height,
             top: props.top,
             left: props.left,
             transform: "rotate(" + props.rotation + "deg)",
-            // objectFit: "contain",
             pointerEvents: swapped ? "auto" : "none",
             transition: "transform 0.2s, opacity 1s linear",
             zIndex: 1,
@@ -92,14 +88,12 @@ const Image = (props) => {
         }}
         onLoad={props.resourceLoaded}
         style={{
-          display: props.hideImg ? "none" : "",
           position: "absolute",
           width: props.width,
           height: props.height,
           top: props.top,
           left: props.left,
           transform: "rotate(" + props.rotation + "deg)",
-          // objectFit: "contain",
           pointerEvents: "auto",
           transition: "transform 0.2s",
           zIndex: 1,

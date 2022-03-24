@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import ScrollContainer from "react-indiana-drag-scroll";
 import "./Canvas.css";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import firebase from "../firebase";
 import Image from "../Image/Image";
 import loadingGIF from "./loading.gif";
-import ProgressBar from "@ramonak/react-progress-bar";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import ProgressBar from 'react-bootstrap/ProgressBar';
 
 const App = () => {
   const [numberOfResourcesLoaded, setNumberOfResourcesLoaded] = useState(0);
@@ -30,18 +30,19 @@ const App = () => {
       .get()
       .then((snapshot) => {
         let data = snapshot.val();
-        let hide = false;
-        let totalResourcesToBeLoaded = 0;
-        data.forEach((item) => {
-          if (item.imgUrl) {
-            totalResourcesToBeLoaded = totalResourcesToBeLoaded + 1;
-          } else {
-            hide = item.hide;
+        let hideGroupItems = false;
+        let totalResources = 0;
+        data.forEach((item, index) => {
+          if (item.type === "Image" && !hideGroupItems) {
+            totalResources = totalResources + 1;
+          } else if (item.isGroup) {
+            hideGroupItems = item.hide;
           }
-          item.hideImg = hide;
+          item.key = index;
+          item.hideImg = hideGroupItems;
         });
 
-        setTotalResourcesToBeLoaded(totalResourcesToBeLoaded);
+        setTotalResourcesToBeLoaded(totalResources);
         setRowData(data);
       });
     firebase
@@ -75,9 +76,11 @@ const App = () => {
     console.log(
       `resources loaded: ${numberOfResourcesLoaded}/${totalResourcesToBeLoaded}`
     );
-    if (numberOfResourcesLoaded === totalResourcesToBeLoaded - 1 && totalResourcesToBeLoaded !== 0) {
+    if (numberOfResourcesLoaded === totalResourcesToBeLoaded && totalResourcesToBeLoaded !== 0) {
       console.log("Everything loaded");
-      setIsLoading(false); 
+      setTimeout(()=>{
+        setIsLoading(false); 
+      }, 2000);
     }
   }, [numberOfResourcesLoaded]);
 
@@ -90,17 +93,13 @@ const App = () => {
       <div
         className="loading"
         style={{
-          display: isLoading ? "block" : "none",
+          display: isLoading ? "flex" : "none",
           backgroundImage: `url(${loadingGIF})`,
           backgroundSize: `max(20vw, 20vh)`,
+          justifyContent: `center`,
         }}
       >
-        <ProgressBar
-          completed={Math.floor((numberOfResourcesLoaded / totalResourcesToBeLoaded) * 100)}
-          isLabelVisible={false}
-          className="progress-bar"
-          barContainerClassName="progress-bar-container"
-        />
+        <ProgressBar animated now={numberOfResourcesLoaded} />
       </div>
       <div
         style={{
@@ -114,10 +113,11 @@ const App = () => {
               height: "max(100vw, 100vh)",
             }}
           >
-            {rowData.map((obj, index) => (
+            {rowData.map((obj) => (
               <>
-                {obj.type === "Image" ? (
+                {obj.type === "Image" && !obj.hideImg ? (
                   <a
+                    key={obj.key}
                     href={
                       obj.clickActionObject &&
                         obj.clickActionObject.actionCode === 1
@@ -132,7 +132,6 @@ const App = () => {
                     }
                   >
                     <Image
-                      key={index}
                       imgUrl={obj.imgUrl}
                       width={obj.width}
                       height={obj.height}
@@ -142,11 +141,11 @@ const App = () => {
                       onHoverScale={obj.onHoverScale}
                       resourceLoaded={resourceLoaded}
                       clickActionObject={obj.clickActionObject}
-                      hideImg={obj.hideImg}
                     />
                   </a>
-                ) : (obj.type === "Video" ? (
+                ) : (obj.type === "Video" && !obj.hideImg ? (
                   <video
+                    key={obj.key}
                     src={obj.imgUrl}
                     style={{
                       position: "absolute",
@@ -155,7 +154,7 @@ const App = () => {
                       top: obj.top,
                       left: obj.left,
                       objectFit: "cover",
-                    }}                    
+                    }}
                     autoPlay
                     loop
                     muted
@@ -223,7 +222,9 @@ const CustomTransformWrapper = ({ canvasScale, children }) => {
         initialPositionY={-(canvasWidthAndHeight - window.innerHeight) / 2}
       >
         <TransformComponent>
-          <ScrollContainer>{children}</ScrollContainer>
+          {/* <ScrollContainer> */}
+          {children}
+          {/* </ScrollContainer> */}
         </TransformComponent>
       </TransformWrapper>
     );
