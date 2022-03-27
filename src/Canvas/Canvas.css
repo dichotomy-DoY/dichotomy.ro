@@ -158,14 +158,25 @@ a.visit-store span:nth-child(4) {
 }
 
 .loading {
-  height: 100vh;
-  background-position-x: center;
-  background-position-y: center;
-  background-repeat: no-repeat;
+  height: 100%;
+  /* background-position-x: center;
+  background-position-y: 25vh;
+  background-repeat: no-repeat; */
 }
 
-.progress {
+.loading img {
+  width: 20vmax;
+}
+
+.loading .progress {
   width: 50%;
-  margin-bottom: 15vh;
-  margin-top: auto;
+  margin-top: 40px;
+
+  height: 0.25rem;
+
+  background-color: black;
+}
+
+.progress .progress-bar {
+  background-color: white;
 }

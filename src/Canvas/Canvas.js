@@ -80,7 +80,7 @@ const App = () => {
       console.log("Everything loaded");
       setTimeout(()=>{
         setIsLoading(false); 
-      }, 2000);
+      }, 1000); // time out added for the loader to complete its animation
     }
   }, [numberOfResourcesLoaded]);
 
@@ -94,11 +94,12 @@ const App = () => {
         className="loading"
         style={{
           display: isLoading ? "flex" : "none",
-          backgroundImage: `url(${loadingGIF})`,
-          backgroundSize: `max(20vw, 20vh)`,
-          justifyContent: `center`,
+          flexDirection: "column",
+          placeContent: "center",
+          alignItems: "center"
         }}
       >
+        <img src={loadingGIF}/>
         <ProgressBar animated now={numberOfResourcesLoaded} />
       </div>
       <div
