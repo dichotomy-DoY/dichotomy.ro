@@ -159,9 +159,16 @@ a.visit-store span:nth-child(4) {
 
 .loading {
   height: 100%;
-  /* background-position-x: center;
-  background-position-y: 25vh;
-  background-repeat: no-repeat; */
+}
+
+.desktop-loader {
+  --progress-bar-width: 35%;
+  --progress-bar-margin-top:75px;
+}
+
+.mobile-loader {
+  --progress-bar-width: 50%;
+  --progress-bar-margin-top:40px;
 }
 
 .loading img {
@@ -169,8 +176,8 @@ a.visit-store span:nth-child(4) {
 }
 
 .loading .progress {
-  width: 50%;
-  margin-top: 40px;
+  width: var(--progress-bar-width);
+  margin-top: var(--progress-bar-margin-top);
 
   height: 0.25rem;
 

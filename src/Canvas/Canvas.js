@@ -91,7 +91,7 @@ const App = () => {
   return (
     <>
       <div
-        className="loading"
+        className={`loading ${window.innerWidth > 768 ? "desktop-loader" : "mobile-loader"}`}
         style={{
           display: isLoading ? "flex" : "none",
           flexDirection: "column",
