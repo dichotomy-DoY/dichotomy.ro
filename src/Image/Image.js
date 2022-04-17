@@ -125,6 +125,76 @@ const Image = (props) => {
       />
       </>
     );
+  } else if (props.clickActionObject && props.clickActionObject.actionCode === 4) {
+    return (
+      <>
+      <img
+        src={
+          (!swapped &&
+            props.clickActionObject &&
+            props.clickActionObject.actionCode === 4)
+            ? props.imgUrl
+            : props.clickActionObject.link
+        }
+        className="images"
+        onClick={() => {
+          swapped ? setSwapped(false) : setSwapped(true);
+        }}
+        onLoad={props.resourceLoaded}
+        style={{
+          position: "absolute",
+          width: props.width,
+          height: props.height,
+          top: props.top,
+          left: props.left,
+          transform: "rotate(" + props.rotation + "deg)",
+          pointerEvents: "auto",
+          transition: "transform 0.2s",
+          zIndex: 1,
+
+          ":hover": {
+            transform: `rotate(${props.rotation}deg) ${window.innerWidth > 768 ? `scale(${props.onHoverScale})` : ""
+              }`,
+            zIndex: 2,
+          },
+        }}
+      />
+      <img // this is just to download the gif beforehand
+        src={ props.imgUrl }
+        className="images"
+        onLoad={props.resourceLoaded}
+        style={{
+          display:"none",
+          position: "absolute",
+          width: props.width,
+          height: props.height,
+          top: props.top,
+          left: props.left,
+          transform: "rotate(" + props.rotation + "deg)",
+          pointerEvents: "auto",
+          transition: "transform 0.2s",
+          zIndex: 1,
+        }}
+      />
+      <img // this is just to download the gif beforehand
+        src={ props.clickActionObject.imgUrl }
+        className="images"
+        onLoad={props.resourceLoaded}
+        style={{
+          display:"none",
+          position: "absolute",
+          width: props.width,
+          height: props.height,
+          top: props.top,
+          left: props.left,
+          transform: "rotate(" + props.rotation + "deg)",
+          pointerEvents: "auto",
+          transition: "transform 0.2s",
+          zIndex: 1,
+        }}
+      />
+      </>
+    );
   } else {
     return (
       <img

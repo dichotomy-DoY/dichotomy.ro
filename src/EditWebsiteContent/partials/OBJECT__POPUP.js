@@ -66,6 +66,7 @@ const clickActionList = [
   { name: "Go to link", actionCode: 1 },
   { name: "Swap with another image", actionCode: 2 },
   { name: "Loop GIF once", actionCode: 3 },
+  { name: "Replace GIF with GIF", actionCode: 4 }
 ];
 export default ({
   open,
@@ -389,6 +390,21 @@ export default ({
           }
           className="ewc1--textInput"
         />
+        <TextField
+          style={{
+            display: clickActionObject.actionCode === 4 ? "flex" : "none",
+          }}
+          required={clickActionObject.actionCode === 4}
+          margin="dense"
+          id="outlined-basic"
+          label={"GIF URL to be swapped with"}
+          variant="outlined"
+          value={clickActionObject.link}
+          onChange={(e) =>
+            setClickActionObject({ ...clickActionObject, link: e.target.value })
+          }
+          className="ewc1--textInput"
+        />
         <div
           style={{
             display: "flex",
@@ -460,6 +476,30 @@ export default ({
               }}
               type="file"
               onChange={(e) => uploadImage(e.target.files[0], 3)}
+            />
+          </div>
+          <div
+            style={{
+              display: clickActionObject.actionCode === 4 ? "block" : "none",
+            }}
+          >
+            <h3>Upload GIF to be swapped with</h3>
+            <img
+              src={clickActionObject.link}
+              style={{
+                width: "125px",
+                height: "125px",
+                margin: "5px",
+                objectFit: "cover",
+                display: "block",
+              }}
+            />
+            <input
+              style={{
+                justifySelf: "center",
+              }}
+              type="file"
+              onChange={(e) => uploadImage(e.target.files[0], 4)}
             />
           </div>
         </div>
