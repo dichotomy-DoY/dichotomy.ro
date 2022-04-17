@@ -155,8 +155,7 @@ export default () => {
     return (
       <h4
         style={{
-          marginBlockStart: 0.8 + "em",
-          marginBlockEnd: 0.8 + "em",
+          marginBlockStart: 0.2 + "em",
           marginInlineStart: 0.8 + "em",
         }}
       >

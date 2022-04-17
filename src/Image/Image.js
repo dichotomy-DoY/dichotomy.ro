@@ -63,8 +63,9 @@ const Image = (props) => {
         />
       </>
     );
-  } else {
+  } else if (props.clickActionObject && props.clickActionObject.actionCode === 3) {
     return (
+      <>
       <img
         src={
           (!played &&
@@ -86,6 +87,49 @@ const Image = (props) => {
             }, props.clickActionObject.gifDuration * 1000);
           }
         }}
+        onLoad={props.resourceLoaded}
+        style={{
+          position: "absolute",
+          width: props.width,
+          height: props.height,
+          top: props.top,
+          left: props.left,
+          transform: "rotate(" + props.rotation + "deg)",
+          pointerEvents: "auto",
+          transition: "transform 0.2s",
+          zIndex: 1,
+
+          ":hover": {
+            transform: `rotate(${props.rotation}deg) ${window.innerWidth > 768 ? `scale(${props.onHoverScale})` : ""
+              }`,
+            zIndex: 2,
+          },
+        }}
+      />
+      <img // this is just to download the gif beforehand
+        src={ props.imgUrl }
+        className="images"
+        onLoad={props.resourceLoaded}
+        style={{
+          display:"none",
+          position: "absolute",
+          width: props.width,
+          height: props.height,
+          top: props.top,
+          left: props.left,
+          transform: "rotate(" + props.rotation + "deg)",
+          pointerEvents: "auto",
+          transition: "transform 0.2s",
+          zIndex: 1,
+        }}
+      />
+      </>
+    );
+  } else {
+    return (
+      <img
+        src={ props.imgUrl }
+        className="images"
         onLoad={props.resourceLoaded}
         style={{
           position: "absolute",

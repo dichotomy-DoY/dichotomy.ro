@@ -78,9 +78,7 @@ const App = () => {
     );
     if (numberOfResourcesLoaded === totalResourcesToBeLoaded && totalResourcesToBeLoaded !== 0) {
       console.log("Everything loaded");
-      setTimeout(()=>{
-        setIsLoading(false); 
-      }, 1000); // time out added for the loader to complete its animation
+      setIsLoading(false);
     }
   }, [numberOfResourcesLoaded]);
 
