@@ -177,7 +177,7 @@ const Image = (props) => {
         }}
       />
       <img // this is just to download the gif beforehand
-        src={ props.clickActionObject.imgUrl }
+        src={ props.clickActionObject.link }
         className="images"
         onLoad={props.resourceLoaded}
         style={{
