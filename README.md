@@ -7,6 +7,13 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 In the project directory, you can run:
 
 ### `npm start`
+This will install all the required npm packages.
+The package 'react-zoom-pan-pinch' should be modified for the app to work correctly.
+Search for 'transform-component-module_wrapper__1_Fgj' in all of the files present in the dist folder of the
+package. There will be a total of four occurrences in two files. Change the 'width' and 'height' property
+from 'fit-content' to '100vw' and '100vh' respectively
+
+### `npm start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
