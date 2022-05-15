@@ -22,6 +22,7 @@ const App = () => {
   const [hide, set_hide] = useState(false);
 
   //const videoElement = React.useRef(null);
+  const canvasElement = React.useRef();
 
   useEffect(() => {
     firebase
@@ -87,7 +88,12 @@ const App = () => {
   };
 
   return (
-    <>
+    <div 
+      ref={canvasElement}
+      style={{
+        height: "100%"
+      }}
+    >
       <div
         className={`loading ${window.innerWidth > 768 ? "desktop-loader" : "mobile-loader"}`}
         style={{
@@ -103,13 +109,14 @@ const App = () => {
       <div
         style={{
           display: isLoading ? "none" : "block",
+          height: "100%"
         }}
       >
-        <CustomTransformWrapper canvasScale={canvasScale}>
+        <CustomTransformWrapper canvasScale={canvasScale} canvasWidth={canvasElement.current?.clientWidth} canvasHeight={canvasElement.current?.clientHeight}>
           <div
             style={{
-              width: "max(100vw, 100vh)",
-              height: "max(100vw, 100vh)",
+              width: `max(${canvasElement.current?.clientWidth}px, ${canvasElement.current?.clientHeight}px)`,
+              height: `max(${canvasElement.current?.clientWidth}px, ${canvasElement.current?.clientHeight}px)`,
             }}
           >
             {rowData.map((obj) => (
@@ -171,7 +178,7 @@ const App = () => {
           />
         </CustomTransformWrapper>
       </div>
-    </>
+    </div>
   );
 };
 
@@ -206,19 +213,18 @@ const VisitStore = ({
   );
 };
 
-const CustomTransformWrapper = ({ canvasScale, children }) => {
+const CustomTransformWrapper = ({ canvasScale, canvasWidth, canvasHeight, children }) => {
   if (canvasScale === 0) {
     return <></>;
   } else {
-    const canvasWidthAndHeight =
-      Math.max(window.innerWidth, window.innerHeight) * canvasScale;
+    const canvasWidthAndHeight = Math.max(canvasWidth, canvasHeight) * canvasScale;
     return (
       <TransformWrapper
         initialScale={Number(canvasScale)}
         minScale={Number(canvasScale)}
         maxScale={Number(canvasScale)}
-        initialPositionX={-(canvasWidthAndHeight - window.innerWidth) / 2}
-        initialPositionY={-(canvasWidthAndHeight - window.innerHeight) / 2}
+        initialPositionX={-(canvasWidthAndHeight - canvasWidth) / 2}
+        initialPositionY={-(canvasWidthAndHeight - canvasHeight) / 2}
       >
         <TransformComponent>
           {/* <ScrollContainer> */}
