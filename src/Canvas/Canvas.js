@@ -5,6 +5,7 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import firebase from "../firebase";
 import Image from "../Image/Image";
 import loadingGIF from "./loading.gif";
+import dragToExplore from "./dragToExplore.gif";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 
@@ -104,12 +105,14 @@ const App = () => {
         }}
       >
         <img src={loadingGIF}/>
+        <img className="drag-to-explore" src={dragToExplore} />
         <ProgressBar animated now={numberOfResourcesLoaded} />
       </div>
       <div
         style={{
           display: isLoading ? "none" : "block",
-          height: "100%"
+          height: "100%",
+          cursor: "grab"
         }}
       >
         <CustomTransformWrapper canvasScale={canvasScale} canvasWidth={canvasElement.current?.clientWidth} canvasHeight={canvasElement.current?.clientHeight}>
