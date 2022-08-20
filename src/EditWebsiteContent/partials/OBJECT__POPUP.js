@@ -18,6 +18,7 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import firebase from "../../firebase";
+import { isUndefined } from "lodash";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -147,14 +148,17 @@ export default ({
       imgUrl,
       clickActionObject,
     };
-    const changedObjectIndex = objectDetails.rowData.findIndex((element) => {
-      return element.objectId === objectDetails.selectedRow.objectId;
-    });
-    if (changedObjectIndex === -1) {
+
+    if (isUndefined(objectDetails.selectedRow.objectId)) { // this is a new object
       objectDetails.rowData.push(updatedRow);
+      objectDetails.selectedRow = updatedRow;
     } else {
+      const changedObjectIndex = objectDetails.rowData.findIndex((element) => {
+        return element.objectId === objectDetails.selectedRow.objectId;
+      });
       objectDetails.rowData[changedObjectIndex] = updatedRow;
     }
+
     firebase
       .database()
       .ref("websiteContent/objects/")
