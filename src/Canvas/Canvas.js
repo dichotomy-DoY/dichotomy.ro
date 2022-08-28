@@ -75,11 +75,11 @@ const App = () => {
   // });
 
   useEffect(() => {
-    console.log(
-      `resources loaded: ${numberOfResourcesLoaded}/${totalResourcesToBeLoaded}`
-    );
+    // console.log(
+    //   `resources loaded: ${numberOfResourcesLoaded}/${totalResourcesToBeLoaded}`
+    // );
     if (numberOfResourcesLoaded === totalResourcesToBeLoaded && totalResourcesToBeLoaded !== 0) {
-      console.log("Everything loaded");
+      //console.log("Everything loaded");
       setIsLoading(false);
     }
   }, [numberOfResourcesLoaded]);

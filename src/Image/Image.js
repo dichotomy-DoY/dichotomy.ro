@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import "./Image.css";
 import Radium from "radium";
+import mainGif from "../Canvas/ezgif.com-gif-maker.mp4";
 
 const Image = (props) => {
   const [swapped, setSwapped] = useState(false);
-  const [played, setPlayed] = useState(false);
+  const mainGIF = useRef();
 
   if (props.clickActionObject && props.clickActionObject.actionCode === 2) {
     return (
@@ -65,28 +66,12 @@ const Image = (props) => {
     );
   } else if (props.clickActionObject && props.clickActionObject.actionCode === 3) {
     return (
-      <>
-      <img
-        src={
-          (!played &&
-            props.clickActionObject &&
-            props.clickActionObject.actionCode === 3)
-            ? props.clickActionObject.link
-            : props.imgUrl
-        }
-        className="images"
+      <video
+        ref={mainGIF}
         onClick={() => {
-          if (
-            !played &&
-            props.clickActionObject &&
-            props.clickActionObject.actionCode === 3
-          ) {
-            setPlayed(true);
-            setTimeout(() => {
-              setPlayed(false);
-            }, props.clickActionObject.gifDuration * 1000);
-          }
-        }}
+            mainGIF.current.play();
+          }}
+        src={mainGif} 
         onLoad={props.resourceLoaded}
         style={{
           position: "absolute",
@@ -104,26 +89,8 @@ const Image = (props) => {
               }`,
             zIndex: 2,
           },
-        }}
-      />
-      <img // this is just to download the gif beforehand
-        src={ props.imgUrl }
-        className="images"
-        onLoad={props.resourceLoaded}
-        style={{
-          display:"none",
-          position: "absolute",
-          width: props.width,
-          height: props.height,
-          top: props.top,
-          left: props.left,
-          transform: "rotate(" + props.rotation + "deg)",
-          pointerEvents: "auto",
-          transition: "transform 0.2s",
-          zIndex: 1,
-        }}
-      />
-      </>
+        }}>
+      </video>
     );
   } else if (props.clickActionObject && props.clickActionObject.actionCode === 4) {
     return (
