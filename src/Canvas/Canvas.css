@@ -200,6 +200,10 @@ a.visit-store span:nth-child(4) {
   background-color: white;
 }
 
+.main-container canvas {
+  pointer-events: none !important;
+}
+
 video::-internal-media-controls-overlay-cast-button {
   display: none;
 }
