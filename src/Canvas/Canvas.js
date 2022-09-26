@@ -10,8 +10,6 @@ import loadingGIF from "./loading.gif";
 import dragToExplore from "./dragToExplore.gif";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ProgressBar from 'react-bootstrap/ProgressBar';
-import particlesConfigMobile from './particles-mobile.json';
-import particlesConfigDesktop from './particles-desktop.json';
 
 const App = () => {
   const [numberOfResourcesLoaded, setNumberOfResourcesLoaded] = useState(0);
@@ -25,6 +23,9 @@ const App = () => {
   const [button_top, set_button_top] = useState("");
   const [button_left, set_button_left] = useState("");
   const [hide, set_hide] = useState(false);
+
+  const [partcilesDesktop, setParticlesDesktop] = useState();
+  const [particlesMobile, setParticlesMobile] = useState();
 
   //const videoElement = React.useRef(null);
   const canvasElement = React.useRef();
@@ -69,6 +70,14 @@ const App = () => {
         set_button_left(snapshot.val().left);
         set_hide(snapshot.val().hide);
       });
+    firebase
+      .database()
+      .ref("websiteContent/particles")
+      .get()
+      .then((snapshot) => {
+        setParticlesDesktop(snapshot.val().desktop);
+        setParticlesMobile(snapshot.val().mobile);
+      })
   }, []);
 
   const particlesInit = useCallback(async (engine) => {
@@ -161,7 +170,6 @@ const App = () => {
               </>
             ))}
           </div>
-          <Particles id="tsparticles" init={particlesInit} loaded={particlesLoaded} options={particlesConfigDesktop} />
           <VisitStore
             button_width={button_width}
             button_height={button_height}
@@ -170,6 +178,7 @@ const App = () => {
             hide={hide}
           />
         </CustomTransformWrapper>
+        <Particles id="tsparticles" init={particlesInit} loaded={particlesLoaded} url={window.innerWidth > 768 ? partcilesDesktop : particlesMobile} />
       </div>
     </div>
   );
