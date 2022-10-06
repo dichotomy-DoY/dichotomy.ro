@@ -424,6 +424,7 @@ export default ({
                 margin: "5px",
                 objectFit: "cover",
                 display: "block",
+                backgroundColor: "black"
               }}
             />
             <input
@@ -448,6 +449,7 @@ export default ({
                 margin: "5px",
                 objectFit: "cover",
                 display: "block",
+                backgroundColor: "black"
               }}
             />
             <input
@@ -472,6 +474,7 @@ export default ({
                 margin: "5px",
                 objectFit: "cover",
                 display: "block",
+                backgroundColor: "black"
               }}
             />
             <input
@@ -496,6 +499,7 @@ export default ({
                 margin: "5px",
                 objectFit: "cover",
                 display: "block",
+                backgroundColor: "black"
               }}
             />
             <input

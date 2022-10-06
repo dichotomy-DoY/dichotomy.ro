@@ -207,3 +207,7 @@ a.visit-store span:nth-child(4) {
 video::-internal-media-controls-overlay-cast-button {
   display: none;
 }
+
+.particles-loading {
+  display: none;
+}

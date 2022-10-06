@@ -15,6 +15,7 @@ const App = () => {
   const [numberOfResourcesLoaded, setNumberOfResourcesLoaded] = useState(0);
   const [totalResourcesToBeLoaded, setTotalResourcesToBeLoaded] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [areParticlesLoading, setAreParticlesLoading] = useState(true);
 
   const [rowData, setRowData] = useState([]);
   const [canvasScale, setCanvasScale] = useState(0);
@@ -80,16 +81,18 @@ const App = () => {
       })
   }, []);
 
-  const particlesInit = useCallback(async (engine) => {
-    console.log(engine);
-    // you can initiate the tsParticles instance (engine) here, adding custom shapes or presets
-    // this loads the tsparticles package bundle, it's the easiest method for getting everything ready
-    // starting from v2 you can add only the features you need reducing the bundle size
+  const loadingScreenParticlesInit = useCallback(async (engine) => {
     await loadFull(engine);
   }, []);
 
-  const particlesLoaded = useCallback(async (container) => {
-      await console.log(container);
+  const loadingScreenParticlesLoaded = useCallback(async (container) => {
+      setTimeout(()=>{
+        setAreParticlesLoading(false);
+      }, 1000);
+  }, []);
+
+  const canvasScreenParticlesInit = useCallback(async (engine) => {
+    await loadFull(engine);
   }, []);
 
   useEffect(() => {
@@ -121,6 +124,8 @@ const App = () => {
         <img src={loadingGIF}/>
         <img className="drag-to-explore" src={dragToExplore} />
         <ProgressBar animated now={numberOfResourcesLoaded} />
+        <Particles id="loading-screen-particles" init={loadingScreenParticlesInit} loaded={loadingScreenParticlesLoaded}
+          url={window.innerWidth > 768 ? partcilesDesktop : particlesMobile} className={areParticlesLoading ? 'particles-loading' : ''} />
       </div>
       <div
         style={{
@@ -178,7 +183,7 @@ const App = () => {
             hide={hide}
           />
         </CustomTransformWrapper>
-        <Particles id="tsparticles" init={particlesInit} loaded={particlesLoaded} url={window.innerWidth > 768 ? partcilesDesktop : particlesMobile} />
+        <Particles id="tsparticles" init={canvasScreenParticlesInit} url={window.innerWidth > 768 ? partcilesDesktop : particlesMobile} />
       </div>
     </div>
   );
