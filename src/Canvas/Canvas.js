@@ -2,8 +2,6 @@ import React, { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import "./Canvas.css";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import Particles from "react-tsparticles";
-import { loadFull } from "tsparticles";
 import firebase from "../firebase";
 import Image from "../Image/Image";
 import loadingGIF from "./loading.gif";
@@ -78,26 +76,17 @@ const App = () => {
       .then((snapshot) => {
         setParticlesDesktop(snapshot.val().desktop);
         setParticlesMobile(snapshot.val().mobile);
+
+        console.log(snapshot.val().desktop)
+        window.particlesJS.load('particles-js', snapshot.val().desktop);
       })
-  }, []);
-
-  const loadingScreenParticlesInit = useCallback(async (engine) => {
-    await loadFull(engine);
-  }, []);
-
-  const loadingScreenParticlesLoaded = useCallback(async (container) => {
-      setTimeout(()=>{
-        setAreParticlesLoading(false);
-      }, 1000);
-  }, []);
-
-  const canvasScreenParticlesInit = useCallback(async (engine) => {
-    await loadFull(engine);
   }, []);
 
   useEffect(() => {
     if (numberOfResourcesLoaded === totalResourcesToBeLoaded && totalResourcesToBeLoaded !== 0) {
-      setIsLoading(false);
+      // setTimeout(() => {
+        setIsLoading(false);
+      // }, 5000);
     }
   }, [numberOfResourcesLoaded]);
 
@@ -121,11 +110,9 @@ const App = () => {
           alignItems: "center"
         }}
       >
-        <img src={loadingGIF}/>
-        <img className="drag-to-explore" src={dragToExplore} />
-        <ProgressBar animated now={numberOfResourcesLoaded} />
-        <Particles id="loading-screen-particles" init={loadingScreenParticlesInit} loaded={loadingScreenParticlesLoaded}
-          url={window.innerWidth > 768 ? partcilesDesktop : particlesMobile} className={areParticlesLoading ? 'particles-loading' : ''} />
+        <img src={loadingGIF} className="fade-in-logo"/>
+        <img className="drag-to-explore fade-in-drag-to-explore" src={dragToExplore} />
+        <ProgressBar animated now={numberOfResourcesLoaded} className='fade-in-progess-bar' /> 
       </div>
       <div
         style={{
@@ -183,7 +170,6 @@ const App = () => {
             hide={hide}
           />
         </CustomTransformWrapper>
-        <Particles id="tsparticles" init={canvasScreenParticlesInit} url={window.innerWidth > 768 ? partcilesDesktop : particlesMobile} />
       </div>
     </div>
   );
