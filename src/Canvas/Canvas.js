@@ -23,8 +23,8 @@ const App = () => {
   const [button_left, set_button_left] = useState("");
   const [hide, set_hide] = useState(false);
 
-  const [partcilesDesktop, setParticlesDesktop] = useState();
-  const [particlesMobile, setParticlesMobile] = useState();
+  //const [partcilesDesktop, setParticlesDesktop] = useState();
+  //const [particlesMobile, setParticlesMobile] = useState();
 
   //const videoElement = React.useRef(null);
   const canvasElement = React.useRef();
@@ -74,19 +74,22 @@ const App = () => {
       .ref("websiteContent/particles")
       .get()
       .then((snapshot) => {
-        setParticlesDesktop(snapshot.val().desktop);
-        setParticlesMobile(snapshot.val().mobile);
-
-        console.log(snapshot.val().desktop)
-        window.particlesJS.load('particles-js', snapshot.val().desktop);
+        //setParticlesDesktop(snapshot.val().desktop);
+        //setParticlesMobile(snapshot.val().mobile);
+        if(window.innerWidth > 768)
+        {
+          window.particlesJS.load('particles-js', snapshot.val().desktop);
+        } else {
+          window.particlesJS.load('particles-js', snapshot.val().mobile);
+        }
       })
   }, []);
 
   useEffect(() => {
     if (numberOfResourcesLoaded === totalResourcesToBeLoaded && totalResourcesToBeLoaded !== 0) {
-      // setTimeout(() => {
+      setTimeout(() => {
         setIsLoading(false);
-      // }, 5000);
+      }, 3000);
     }
   }, [numberOfResourcesLoaded]);
 
@@ -96,6 +99,7 @@ const App = () => {
 
   return (
     <div
+      id="particles-js"
       ref={canvasElement}
       style={{
         height: "100%"

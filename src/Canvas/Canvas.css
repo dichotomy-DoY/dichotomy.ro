@@ -200,7 +200,10 @@ a.visit-store span:nth-child(4) {
   background-color: white;
 }
 
-#tsparticles canvas {
+#particles-js canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
   pointer-events: none !important;
 }
 
@@ -220,31 +223,31 @@ video::-internal-media-controls-overlay-cast-button {
   -ms-animation: fadeIn 5s;
 }
 
-.fade-in-particles {
-  animation: fadeIn 10s;
-  -webkit-animation: fadeIn 10s;
-  -moz-animation: fadeIn 10s;
-  -o-animation: fadeIn 10s;
-  -ms-animation: fadeIn 10s;
+#particles-js canvas {
+  animation: fadeIn 1s;
+  -webkit-animation: fadeIn 1s;
+  -moz-animation: fadeIn 1s;
+  -o-animation: fadeIn 1s;
+  -ms-animation: fadeIn 1s;
 }
 
 .fade-in-progess-bar {
-  animation: fadeIn 20s;
-  -webkit-animation: fadeIn 20s;
-  -moz-animation: fadeIn 20s;
-  -o-animation: fadeIn 20s;
-  -ms-animation: fadeIn 20s;
+  animation: fadeInFast 25s;
+  -webkit-animation: fadeInFast 25s;
+  -moz-animation: fadeInFast 25s;
+  -o-animation: fadeInFast 25s;
+  -ms-animation: fadeInFast 25s;
 }
 
 .fade-in-drag-to-explore {
-  animation: fadeIn 25s;
-  -webkit-animation: fadeIn 25s;
-  -moz-animation: fadeIn 25s;
-  -o-animation: fadeIn 25s;
-  -ms-animation: fadeIn 25s;
+  animation: fadeInFast 30s;
+  -webkit-animation: fadeInFast 30s;
+  -moz-animation: fadeInFast 30s;
+  -o-animation: fadeInFast 30s;
+  -ms-animation: fadeInFast 30s;
 }
 
-/* @keyframes fadeIn {
+@keyframes fadeIn {
   0% { opacity: 0; }
   100% { opacity: 1; }
 }
@@ -267,40 +270,29 @@ video::-internal-media-controls-overlay-cast-button {
 @-ms-keyframes fadeIn {
   0% { opacity: 0; }
   100% { opacity: 1; }
-} */
-
-.particles-loader-div {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: red;
-
-  animation: zIndex 5s;
 }
 
-@keyframes zIndex {
-  0% { z-index: 1; }
-  100% { z-index: 0; }
+@keyframes fadeInFast {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
 }
 
-@-moz-keyframes zIndex {
-  0% { z-index: 1; }
-  100% { z-index: 0; }
+@-moz-keyframes fadeInFast {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
 }
 
-@-webkit-keyframes zIndex {
-  0% { z-index: 1; }
-  100% { z-index: 0; }
+@-webkit-keyframes fadeInFast {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
 }
 
-@-o-keyframes zIndex {
-  0% { z-index: 1; }
-  100% { z-index: 0; }
+@-o-keyframes fadeInFast {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
 }
 
-@-ms-keyframes zIndex {
-  0% { z-index: 1; }
-  100% { z-index: 0; }
+@-ms-keyframes fadeInFast {
+  50% { opacity: 0; }
+  50% { opacity: 1; }
 }
