@@ -166,21 +166,15 @@ export default () => {
   const gridOptions = {
     // enable sorting on 'name' and 'age' columns only
     columnDefs: [
-      { field: "type", sortable: true, filter: true },
-      {
-        field: "name",
-        sortable: true,
-        filter: true,
-        rowDrag: true,
-        width: 300,
-      },
-      { field: "width", sortable: true, filter: true },
-      { field: "height", sortable: true, filter: true },
-      { field: "top", sortable: true, filter: true },
-      { field: "left", sortable: true, filter: true },
-      { field: "rotation", sortable: true, filter: true },
-      { field: "onHoverScale", sortable: true, filter: true },
-      { cellRenderer: "btnCellRenderer", minWidth: 150 },
+      { field: "type", sortable: true, filter: true, width: 85 },
+      { field: "name", sortable: true, filter: true, rowDrag: true, width: 400},
+      { field: "width", sortable: true, filter: true, width: 95 },
+      { field: "height", sortable: true, filter: true, width: 100 },
+      { field: "top", sortable: true, filter: true, width: 80 },
+      { field: "left", sortable: true, filter: true, width: 80 },
+      { field: "rotation", sortable: true, filter: true, width: 110 },
+      { field: "onHoverScale", sortable: true, filter: true, width: 155 },
+      { cellRenderer: "btnCellRenderer", minWidth: 50 },
     ],
     frameworkComponents: {
       btnCellRenderer: BtnCellRenderer,
