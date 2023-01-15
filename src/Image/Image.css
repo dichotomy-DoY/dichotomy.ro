@@ -1,0 +1,7 @@
+.canvas-image {
+    opacity:1;
+}
+
+.canvas-image-hidden {
+    opacity: 0;
+}

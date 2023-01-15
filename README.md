@@ -8,6 +8,19 @@ In the project directory, you can run:
 
 ### `npm start`
 
+This will install all the required npm packages.
+
+# Custom changes in react-zoom-pan-pinch package
+
+The package 'react-zoom-pan-pinch' should be modified for the app to work correctly.
+Search for 'transform-component-module_wrapper\_\_1_Fgj' in all of the files present in the dist folder of the
+package. There will be a total of four occurrences in two files. Change the 'width' and 'height' property
+from 'fit-content' to '100vw' and '100vh' respectively
+Note:
+better to replace react-zoom-pan-pinch in node_modules folder.
+
+### `npm start`
+
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
@@ -68,3 +81,4 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+

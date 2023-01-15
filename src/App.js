@@ -4,18 +4,29 @@ import "./styles.css";
 
 import Canvas from "./Canvas/Canvas";
 import EditWebsiteContent from "./EditWebsiteContent/EditWebsiteContent";
+import SignIn from "./SignIn/SignIn";
+import { AuthProvider } from "./Contexts/AuthContext";
+import PrivateRoute from "./PrivateRoute/PrivateRoute";
 
 const App = () => (
   <>
     <Router>
-      <Switch>
-        <Route path="/edit-website-content">
-          <EditWebsiteContent />
-        </Route>
-        <Route path="/">
-          <Canvas />
-        </Route>
-      </Switch>
+      <AuthProvider>
+        <Switch>
+          {/* <PrivateRoute exact path="/">
+            <Canvas />
+          </PrivateRoute> */}
+          <Route path="/">
+            <Canvas />
+          </Route>
+          <Route path="/signin">
+            <SignIn />
+          </Route>
+          <PrivateRoute path="/edit-website-content">
+            <EditWebsiteContent />
+          </PrivateRoute>
+        </Switch>
+      </AuthProvider>
     </Router>
   </>
 );

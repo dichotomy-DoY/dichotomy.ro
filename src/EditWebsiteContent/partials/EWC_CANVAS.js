@@ -25,19 +25,29 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export default () => {
-  const [canvas_width, set_canvas_width] = useState("");
-  const [canvas_height, set_canvas_height] = useState("");
+  // const [canvas_width, set_canvas_width] = useState("");
+  // const [canvas_height, set_canvas_height] = useState("");
+  const [canvasScale, setCanvasScale] = useState("");
+
+  // const home = [
+  //   {
+  //     label: "canvas_width",
+  //     value: canvas_width,
+  //     method: set_canvas_width,
+  //   },
+  //   {
+  //     label: "canvas_height",
+  //     value: canvas_height,
+  //     method: set_canvas_height,
+  //   },
+  // ];
 
   const home = [
     {
-      label: "canvas_width",
-      value: canvas_width,
-      method: set_canvas_width,
-    },
-    {
-      label: "canvas_height",
-      value: canvas_height,
-      method: set_canvas_height,
+      label: "Canvas Scale (1-8)",
+      property: "canvasScale",
+      value: canvasScale,
+      method: setCanvasScale,
     },
   ];
 
@@ -46,8 +56,7 @@ export default () => {
       .database()
       .ref("websiteContent/" + "canvas")
       .set({
-        canvas_width,
-        canvas_height,
+        canvasScale,
       });
   };
 
@@ -58,7 +67,7 @@ export default () => {
       .get()
       .then((snapshot) => {
         home.map((item) =>
-          item.method(snapshot.val() ? snapshot.val()[item.label] : "")
+          item.method(snapshot.val() ? snapshot.val()[item.property] : 0)
         );
       });
   }, []);
@@ -96,7 +105,7 @@ export default () => {
                 id="outlined-basic"
                 style={{ backgroundColor: "lightyellow" }}
                 multiline
-                rows={3}
+                rows={1}
                 label={item.label}
                 variant="outlined"
                 value={item.value}

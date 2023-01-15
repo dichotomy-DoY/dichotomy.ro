@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Theme, createStyles, makeStyles } from "@material-ui/core/styles";
+import _ from "lodash";
 import {
   Button,
   TextField,
@@ -17,11 +18,12 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { AgGridReact } from "ag-grid-react";
+import { AgGridReact, AgGridColumn } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import firebase from "../../firebase";
 import OBJECT__POPUP from "./OBJECT__POPUP";
+import GROUP__POPUP from "./GROUP__POPUP";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -68,61 +70,163 @@ const typeList = [{ name: "Image" }, { name: "Video" }];
 export default () => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [groupOpen, setGroupOpen] = React.useState(false);
   const [reload, setReload] = useState(false);
-  const [rowData, setRowData] = useState("");
-  const [objectDetails, setObjectDetails] = useState({});
+  const [rowData, setRowData] = useState([]);
+  const [rowOrderData, setRowOrderData] = useState([]);
+  const [objectDetails, setObjectDetails] = useState({
+    rowData: [],
+    selectedRow: {},
+  });
   const [isNewObject, setIsNewObject] = useState(true);
 
   const handleClickOpen = () => {
+    setObjectDetails({ rowData: rowOrderData, selectedRow: {} });
     setOpen(true);
+  };
+
+  const handleGroupClickOpen = () => {
+    setObjectDetails({ rowData: rowOrderData, selectedRow: {} });
+    setGroupOpen(true);
   };
 
   useEffect(() => {
     firebase
       .database()
-      .ref("websiteContent/objects")
+      .ref("websiteContent")
       .get()
       .then((snapshot) => {
-        console.log(snapshot.val());
-        let data = [];
-        for (let item in snapshot.val()) {
-          data.push(snapshot.val()[item]);
-        }
+        setRowData(snapshot.val().objects);
+        setRowOrderData(snapshot.val().objects);
+      })
+      .catch((error) => console.log(error));
+  }, [open, groupOpen]);
 
-        setRowData(data);
+  const saveOrderDetails = (updatedRowData) => {
+    firebase
+      .database()
+      .ref("websiteContent/objects")
+      .set(updatedRowData, (error) => {
+        if (error) {
+          alert("Error Occured");
+        } else {
+          console.log("Saved");
+        }
       });
-  }, [open]);
+  };
+
+  const getRowOrderData = async () => {
+    const objects = await (
+      await firebase.database().ref("websiteContent").get()
+    ).val().objects;
+
+    return objects;
+  };
 
   const BtnCellRenderer = (props) => {
     return (
       <DeleteIcon
         color="secondary"
-        onClick={() => {
+        onClick={async () => {
+          //let data = props.agGridReact.props.rowData;
+
+          let data = await getRowOrderData();
+          data = data.filter(
+            (element) => element.objectId !== props.data.objectId
+          );
           firebase
             .database()
-            .ref("websiteContent/objects/" + props.data.ref)
-            .remove();
-          alert(JSON.stringify(props.data));
+            .ref("websiteContent/objects/")
+            .set(data, (error) => {
+              if (error) {
+                alert("Error Occured");
+              } else {
+                setRowData(data);
+                setRowOrderData(data);
+                alert("Deleted");
+              }
+            });
         }}
       />
+    );
+  };
+
+  const FullWidthCellRenderer = (props) => {
+    return (
+      <h4
+        style={{
+          marginBlockStart: 0.2 + "em",
+          marginInlineStart: 0.8 + "em",
+        }}
+      >
+        {props.data.name}
+      </h4>
     );
   };
   const gridOptions = {
     // enable sorting on 'name' and 'age' columns only
     columnDefs: [
-      { field: "type", sortable: true, filter: true },
-      { field: "name", sortable: true, filter: true },
-      { field: "width", sortable: true, filter: true },
-      { field: "height", sortable: true, filter: true },
-      { field: "top", sortable: true, filter: true },
-      { field: "left", sortable: true, filter: true },
-      { cellRenderer: "btnCellRenderer", minWidth: 150 },
+      { field: "type", sortable: true, filter: true, width: 85 },
+      { field: "name", sortable: true, filter: true, rowDrag: true, width: 400},
+      { field: "width", sortable: true, filter: true, width: 95 },
+      { field: "height", sortable: true, filter: true, width: 100 },
+      { field: "top", sortable: true, filter: true, width: 80 },
+      { field: "left", sortable: true, filter: true, width: 80 },
+      { field: "rotation", sortable: true, filter: true, width: 110 },
+      { field: "onHoverScale", sortable: true, filter: true, width: 155 },
+      { cellRenderer: "btnCellRenderer", minWidth: 50 },
     ],
     frameworkComponents: {
       btnCellRenderer: BtnCellRenderer,
+      fullWidthCellRenderer: FullWidthCellRenderer,
     },
 
     // other grid options ...
+  };
+
+  const array_move = (collection, elementId, newIndex) => {
+    const prevIndex = collection.findIndex((e) => e.objectId === elementId);
+    const up = prevIndex > newIndex ? true : false; // is movement towards up
+
+    let index = 0;
+
+    return _.sortBy(collection, (element) => {
+      if (newIndex === 0) {
+        // move to the top
+        return element.objectId === elementId ? 1 : 2;
+      } else if (newIndex === collection.length - 1) {
+        // move to the bottom
+        return element.objectId === elementId ? 2 : 1;
+      } else {
+        if (element.objectId === elementId) {
+          index++;
+          return 2;
+        }
+        if (index < newIndex || (!up && index === newIndex)) {
+          index++;
+          return 1;
+        } else {
+          index++;
+          return 3;
+        }
+      }
+    });
+  };
+
+  const onRowDragEnd = (event) => {
+    let movedNode = event.node;
+
+    let movedData = movedNode.data;
+    let toIndex = movedNode.rowIndex;
+
+    // update rowOrderData array, state does not need to be updated
+    let updatedRowData = array_move(rowOrderData, movedData.objectId, toIndex);
+
+    // update state
+    setRowOrderData(updatedRowData);
+
+    // update row order
+    saveOrderDetails(updatedRowData);
   };
 
   return (
@@ -153,22 +257,36 @@ export default () => {
                 marginTop: "-10px",
               }}
             >
+              <Button
+                style={{ marginRight: 1 + "em" }}
+                variant="contained"
+                onClick={handleGroupClickOpen}
+              >
+                + Create New Group
+              </Button>
               <Button variant="contained" onClick={handleClickOpen}>
                 + Add Object
               </Button>
             </div>
             <div
               className="ag-theme-alpine"
-              style={{ height: "50vh", width: "100%", maxWidth: "1200px" }}
+              style={{ height: "100vh", width: "100%" }}
             >
               <AgGridReact
                 gridOptions={gridOptions}
                 rowData={rowData}
                 onRowDoubleClicked={(e) => {
-                  setObjectDetails(e.data);
+                  setObjectDetails({
+                    rowData: rowOrderData,
+                    selectedRow: e.data,
+                  });
                   setIsNewObject(false);
-                  setOpen(true);
+                  e.data.isGroup ? setGroupOpen(true) : setOpen(true);
                 }}
+                rowDragManaged={true}
+                onRowDragEnd={onRowDragEnd}
+                isFullWidthCell={(rowNode) => rowNode.data.isGroup}
+                fullWidthCellRenderer="fullWidthCellRenderer"
               ></AgGridReact>
             </div>
           </div>
@@ -177,6 +295,14 @@ export default () => {
             objectDetails={objectDetails}
             setObjectDetails={setObjectDetails}
             openMethod={setOpen}
+            newObject={isNewObject}
+            setIsNewObject={setIsNewObject}
+          />
+          <GROUP__POPUP
+            open={groupOpen}
+            objectDetails={objectDetails}
+            setObjectDetails={setObjectDetails}
+            openMethod={setGroupOpen}
             newObject={isNewObject}
             setIsNewObject={setIsNewObject}
           />
