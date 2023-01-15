@@ -13,9 +13,12 @@ const App = () => (
     <Router>
       <AuthProvider>
         <Switch>
-          <PrivateRoute exact path="/">
+          {/* <PrivateRoute exact path="/">
             <Canvas />
-          </PrivateRoute>
+          </PrivateRoute> */}
+          <Route path="/">
+            <Canvas />
+          </Route>
           <Route path="/signin">
             <SignIn />
           </Route>
