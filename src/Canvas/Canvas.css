@@ -296,3 +296,8 @@ video::-internal-media-controls-overlay-cast-button {
   50% { opacity: 0; }
   50% { opacity: 1; }
 }
+
+.height100 {
+  height: 100% !important;
+  width: 100% !important;
+}

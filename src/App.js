@@ -5,6 +5,7 @@ import "./styles.css";
 import Canvas from "./Canvas/Canvas";
 import EditWebsiteContent from "./EditWebsiteContent/EditWebsiteContent";
 import SignIn from "./SignIn/SignIn";
+import NotFound from "./NotFound/NotFound";
 import { AuthProvider } from "./Contexts/AuthContext";
 import PrivateRoute from "./PrivateRoute/PrivateRoute";
 
@@ -16,15 +17,18 @@ const App = () => (
           {/* <PrivateRoute exact path="/">
             <Canvas />
           </PrivateRoute> */}
-          <Route path="/">
+          <Route exact path="/">
             <Canvas />
           </Route>
-          <Route path="/signin">
+          <Route exact path="/signin">
             <SignIn />
           </Route>
-          <PrivateRoute path="/edit-website-content">
+          <PrivateRoute exact path="/edit-website-content">
             <EditWebsiteContent />
           </PrivateRoute>
+          <Route>
+            <NotFound />
+          </Route>
         </Switch>
       </AuthProvider>
     </Router>

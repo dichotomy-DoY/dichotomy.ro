@@ -1,5 +1,18 @@
 {
   "projects": {
-    "default": "dev-dichotomy-ro"
-  }
+    "default": "dichotomy-ro"
+  },
+  "targets": {
+    "dichotomy-ro": {
+      "hosting": {
+        "development": [
+          "dev-dichotomy-ro"
+        ],
+        "live": [
+          "dichotomy-ro"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

@@ -211,6 +211,14 @@ const VisitStore = ({
 };
 
 const CustomTransformWrapper = ({ canvasScale, canvasWidth, canvasHeight, children }) => {
+  var transformComponentRef = React.useRef(null)
+  
+  useEffect(()=>{
+    if(transformComponentRef.current !== null){
+      transformComponentRef.current.instance.wrapperComponent.className = "react-transform-wrapper transform-component-module_wrapper__1_Fgj height100";
+    }
+  });
+
   if (canvasScale === 0) {
     return <></>;
   } else {
@@ -222,6 +230,7 @@ const CustomTransformWrapper = ({ canvasScale, canvasWidth, canvasHeight, childr
         maxScale={Number(canvasScale)}
         initialPositionX={-(canvasWidthAndHeight - canvasWidth) / 2}
         initialPositionY={-(canvasWidthAndHeight - canvasHeight) / 2}
+        ref={transformComponentRef}
       >
         <TransformComponent>
           {/* <ScrollContainer> */}
